@@ -1410,8 +1410,8 @@ void Simulation::setupConstraints()
 			// generating attachment constraints.
 			//std::vector<unsigned int> handle_1_indices; handle_1_indices.clear(); handle_1_indices.push_back(0);
 			//std::vector<unsigned int> handle_2_indices; handle_2_indices.clear(); handle_2_indices.push_back(m_mesh->m_dim[1] * (m_mesh->m_dim[0] - 1));
-			NewHandle({ 0 }, glm::vec3(1.0, 0.0, 0.0));
-			NewHandle({ m_mesh->m_dim[1] * (m_mesh->m_dim[0] - 1) }, glm::vec3(1.0, 0.0, 0.0));
+		//	NewHandle({ 0 }, glm::vec3(1.0, 0.0, 0.0));
+		//	NewHandle({ m_mesh->m_dim[1] * (m_mesh->m_dim[0] - 1) }, glm::vec3(1.0, 0.0, 0.0));
 			//AddAttachmentConstraint(0);
 			//AddAttachmentConstraint(m_mesh->m_dim[1]*(m_mesh->m_dim[0]-1));
 		}
@@ -1572,7 +1572,7 @@ void Simulation::calculateExternalForce()
 	// gravity
 	for (unsigned int i = 0; i < m_mesh->m_vertices_number; ++i)
 	{
-		m_external_force[3*i+1] += -m_gravity_constant;
+		m_external_force[3*i+2] += m_gravity_constant;//1‚Ù‚¤‚±‚¤
 	}
 
 #ifdef ENABLE_MATLAB_DEBUGGING
@@ -1606,6 +1606,7 @@ void Simulation::collisionDetection(const VectorX& x)
 {
 	if (!m_scene->IsEmpty())
 	{
+		//std::cout << "not empty" << std::endl;
 		m_collision_constraints.clear();
 
 		EigenVector3 surface_point;
@@ -1622,6 +1623,10 @@ void Simulation::collisionDetection(const VectorX& x)
 				m_collision_constraints.push_back(CollisionSpringConstraint(1e3, i, surface_point, normal));
 			}
 		}
+	}
+	else
+	{
+		std::cout << "noooooooooooooooooo" << std::endl;
 	}
 }
 
@@ -1861,9 +1866,11 @@ bool Simulation::performLBFGSOneIteration(VectorX& x)
 		m_lbfgs_queue = new QueueLBFGS(x.size(), m_lbfgs_m);
 #endif
 
+
 		// decide H0 and it's factorization precomputation
 		switch (m_lbfgs_H0_type)
 		{
+			
 		case LBFGS_H0_LAPLACIAN:
 			prefactorize();
 			break;
@@ -2504,7 +2511,7 @@ ScalarType Simulation::evaluateEnergyPureConstraint(const VectorX& x, const Vect
 	//{
 	//	EigenVector3 xi = x.block_vector(i);
 	//	EigenVector3 n;
-	//	ScalarType d;
+	//	ScalarType d;     
 	//	if (m_scene->StaticIntersectionTest(xi, n, d))
 	//	{
 

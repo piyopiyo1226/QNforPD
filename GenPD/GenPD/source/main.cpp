@@ -57,6 +57,7 @@ Camera* g_camera;
 RenderWrapper* g_renderer;
 Scene* g_scene;
 Mesh* g_mesh;
+Primitive* g_primitive;
 Simulation * g_simulation;
 SelectionTool* g_selection_tool;
 #ifdef ENABLE_MATLAB_DEBUGGING
@@ -732,6 +733,16 @@ void init()
     // scene init
     fprintf(stdout, "Initializing scene...\n");
     g_scene = new Scene(DEFAULT_SCENE_FILE);
+	
+	fprintf(stdout, "Initializing primitives...\n");
+	glm::vec3 temp_pos = glm::vec3(0.0, 2.5, 0.0);
+	glm::vec3 temp_vel = glm::vec3( 0.0, 0.0,0.0);//-0.4 
+
+	//g_primitive = new Primitive(CUBE, temp_pos, temp_vel);
+	//g_primitive = new Plane();
+	g_primitive = new  Sphere(temp_pos, temp_vel,1);
+	// Sphere(const glm::vec3 pos, const glm::vec3 vel, float radius) 
+	g_scene->InsertPrimitve(g_primitive);
 
     // mesh init
     fprintf(stdout, "Initializing mesh...\n");
@@ -815,42 +826,50 @@ void TW_CALL reset_simulation(void*)
 {
 	// save current setting before reset
 	AntTweakBarWrapper::SaveSettings(g_config_bar);
-
+	std::cout << "reset simulation" << std::endl;
 	// reset frame#
 	g_current_frame = 0;
 	g_pause = true;
 
-	switch(g_mesh->GetMeshType())
-    {
+	switch (g_mesh->GetMeshType())
+	{
 	case MESH_TYPE_CLOTH:
 		delete g_mesh;
 		g_mesh = new ClothMesh();
-        break;
+		break;
 	case MESH_TYPE_TET:
 		delete g_mesh;
-        g_mesh = new TetMesh();
-        break;
-    }
+		g_mesh = new TetMesh();
+		break;
+	}
 	g_config_bar->LoadSettings();
-    g_mesh->Reset();
+	g_mesh->Reset();
 
-    // reset simulation
-    g_simulation->SetMesh(g_mesh);
+	// reset simulation
+	g_simulation->SetMesh(g_mesh);
 	g_simulation->ResetVisualizationMesh();
 	g_simulation->SetVisualizationMesh();
 	g_simulation->ResetVisualizationMeshHeight();
+
+
 	g_simulation->SetScene(g_scene);
 
-    g_simulation->Reset();
+	g_simulation->Reset();
 
 	// reset selection
 	g_selection_tool->Reset();
-	
+
 	// reset config, (config bar is recommended to reset last)
 	g_config_bar->Reset();
 
 	// reset scene
-	g_scene->Reset();
+//	g_scene->Reset();
+
+
+	/*glm::vec3 temp_pos = glm::vec3(0.0, 0.5, 0.0);
+	glm::vec3 temp_vel = glm::vec3(0.4, 0.0, 0.0);
+	g_primitive = new Primitive(CUBE, temp_pos, temp_vel);*/
+
 
 	// reset matlab debugger related stuff
 #ifdef ENABLE_MATLAB_DEBUGGING

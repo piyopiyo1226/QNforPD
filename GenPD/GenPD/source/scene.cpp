@@ -69,12 +69,14 @@ void Scene::LoadFromFile(const char* file_name)
 		xml_file.Accept(&visitor);
 	}
 }
-
+#include<iostream>
 void Scene::Draw(const VBO& vbos)
 {
     for(std::vector<Primitive*>::iterator iter = m_primitives.begin(); iter != m_primitives.end(); ++iter)
     {
+		//std::cout << m_primitives[0]->type()<<std::endl;
         (*iter)->Draw(vbos);
+		//std::cout << "draw prim" << std::endl;
     }
 }
 

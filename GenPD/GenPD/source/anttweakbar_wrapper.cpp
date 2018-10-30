@@ -468,7 +468,7 @@ int AntTweakBarWrapper::Update()
 		TwDefine(" 'Simulation Settings'/'l-BFGS' visible=true");
 		TwDefine(" 'Simulation Settings'/'Definiteness Fix' visible=false");
 		TwDefine(" 'Simulation Settings'/'Linear Solver' visible=true");
-		if (g_simulation->m_lbfgs_H0_type == LBFGS_H0_LAPLACIAN)
+		if (g_simulation->m_lbfgs_H0_type == LBFGS_H0_LAPLACIAN)//LBFGS_H0_IDENTITY
 		{
 			TwDefine(" 'Simulation Settings'/'Laplacian' visible=true");
 		}
@@ -818,7 +818,7 @@ void AntTweakBarWrapper::DefaultSettings()
 	g_simulation->m_stiffness_kappa = 100;
 	g_simulation->m_stiffness_auto_laplacian_stiffness;
 	g_simulation->m_stiffness_laplacian = 2 * g_simulation->m_stiffness_stretch + g_simulation -> m_stiffness_bending;
-	g_simulation->m_gravity_constant = 100;
+	g_simulation->m_gravity_constant = 0;
 	g_simulation->m_damping_coefficient = 0.001;
 	g_simulation->m_restitution_coefficient = 1;
 	g_simulation->m_friction_coefficient = 0.001;
@@ -841,7 +841,7 @@ void AntTweakBarWrapper::DefaultSettings()
 	g_simulation->m_animation_swing_dir[1] = 1;
 	g_simulation->m_animation_swing_dir[2] = 0;
 
-	g_simulation->m_lbfgs_H0_type = LBFGS_H0_LAPLACIAN;
+	g_simulation->m_lbfgs_H0_type = LBFGS_H0_IDENTITY;// LBFGS_H0_LAPLACIAN;
 	g_simulation->m_lbfgs_m = 5;
 }
 

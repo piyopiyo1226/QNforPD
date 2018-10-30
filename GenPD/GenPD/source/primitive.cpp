@@ -71,6 +71,7 @@ void Primitive::change_color(const glm::vec3& color)
 
 void Primitive::Draw(const VBO& vbos)
 {
+	//drawint primitive
 	// position
 	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 3 * m_positions.size() * sizeof(float), &m_positions[0], GL_STREAM_DRAW);
@@ -200,7 +201,9 @@ void Sphere::init_visualization()
 
 	float theta_z, theta_y, sin_z;
     float delta_y = 360.0 / slice, delta_z = 180.0 / stack;
-	//loop over the sphere
+	//loop over the 
+
+
 	for(theta_z = delta_z; theta_z < 179.99; theta_z += delta_z)
 	{
 		for(theta_y = 0.0; theta_y < 359.99; theta_y += delta_y)
