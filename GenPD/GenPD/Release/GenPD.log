@@ -1,1 +1,104 @@
-﻿
+﻿  anttweakbar_wrapper.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\anttweakbar_wrapper.h(33): fatal error C1083: include ファイルを開けません。'AntTweakBar.h':No such file or directory
+  arcsim_constraint.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  arcsim_handle.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  arcsim_simulation.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  bvh.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  camera.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\openGL_headers.h(34): fatal error C1083: include ファイルを開けません。'GL/glew.h':No such file or directory
+  collision.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  constraint.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  constraint_attachment.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  constraint_penalty.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  constraint_spring.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  Constraint_test.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  constraint_tet.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  constraint_triangle.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  dde.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  fps.cpp
+  frac.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  geometry.cpp
+source\geometry.cpp : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  glsl_wrapper.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\openGL_headers.h(34): fatal error C1083: include ファイルを開けません。'GL/glew.h':No such file or directory
+  handle.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  コンパイル中...
+  io_mesh.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\io_mesh.h(37): fatal error C1083: include ファイルを開けません。'glm.hpp':No such file or directory
+  lineserch.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  magic.cpp
+  main.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  math_headers.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  matlab_debugger.cpp
+  mesh.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\opengl_headers.h(34): fatal error C1083: include ファイルを開けません。'GL/glew.h':No such file or directory
+  mesh_struct.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  mesh_subset.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  near_obs.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  Obstacle.cpp
+  optim.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  physics.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  plasticity.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  pop.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  primitive.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  Proximity.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  referenceshape.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  remesh.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  scene.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\openGL_headers.h(34): fatal error C1083: include ファイルを開けません。'GL/glew.h':No such file or directory
+  コンパイル中...
+  selection_tool.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\opengl_headers.h(34): fatal error C1083: include ファイルを開けません。'GL/glew.h':No such file or directory
+  simulation.cpp
+source\simulation.cpp(35): fatal error C1083: include ファイルを開けません。'Eigen/Eigenvalues':No such file or directory
+  Spline.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  sub_struct.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  taucs.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  tensor.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  tensor_math.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\math_headers.h(34): fatal error C1083: include ファイルを開けません。'Eigen/Core':No such file or directory
+  tinyxml2.cpp
+  transformation.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  util.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  vectors.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\vectors.hpp(34): fatal error C1083: include ファイルを開けません。'zlib.h':No such file or directory
+  svd3x3.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\wundersvd\svd3x3.h(11): fatal error C1083: include ファイルを開けません。'Eigen/Dense':No such file or directory
+  WunderSVD3x3.cpp
+c:\users\kintako\documents\code\qnforpd_initial_position\genpd\genpd\source\wundersvd\WunderSVD3x3.h(1): fatal error C1083: include ファイルを開けません。'Eigen/Dense':No such file or directory

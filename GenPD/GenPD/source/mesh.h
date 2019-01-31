@@ -44,7 +44,7 @@
 //forward declarations
 class Camera;
 class AntTweakBarWrapper;
-class Simulation;
+class Simultion;
 
 typedef enum
 {
@@ -72,13 +72,18 @@ public:
 	virtual ~Mesh() {Cleanup();}
 
 	void Reset();
-	virtual bool Init() {std::cout << "Warning: reach base class virtual init function." << std::endl; return false;}
+	virtual bool Init() {std::cout << "Warning: reach base class virtual ]function." << std::endl; return false;}
 	virtual void Cleanup();
 	virtual void Update();
 
 	// Display
 	virtual void Draw(const VBO& vbos, int show_texture = 0);
 	virtual void DrawWireFrame(const VBO& vbos, int line_width = 1);
+	virtual void DrawInterPolatedMesh(const VBO& vbos, int line_width);
+	virtual void Set_interpolated_position();
+	virtual void Draw_Error(const VBO& vbos, int show_texture);
+
+
 	// IO
 	virtual void ExportToOBJ(const char* filename);
 	virtual bool ImportFromOBJ(const char* filename);
@@ -97,6 +102,8 @@ public:
 	unsigned int m_system_dimension; // 3m
 	unsigned int m_expanded_system_dimension; //6s
 	unsigned int m_expanded_system_dimension_1d; //2s
+	
+	unsigned int m_interpolated_vertices_number;//3m
 
 	// vertices positions/previous positions/mass
 	VectorX m_restpose_positions; // 1x3m
@@ -109,6 +116,11 @@ public:
 
 	SparseMatrix m_mass_matrix_1d;
 	SparseMatrix m_inv_mass_matrix_1d;
+	//---------------add
+	VectorX m_current_interpolated_positions; // 1x3m
+	VectorX m_uv_positions;//uv position 1*3m
+	VectorX m_interpolated_uv_positions;//uv position 1*3m
+
 
 	// for generating constraints.
 	std::vector<Edge> m_edge_list;
@@ -119,7 +131,13 @@ public:
 	std::vector<glm::vec3> m_colors;
 	std::vector<glm::vec2> m_texcoords;
 	std::vector<unsigned int> m_triangle_list;
+	std::vector<unsigned int> m_interpolated_triangle_list;
 
+
+	//------------for interpolated model
+	std::vector<glm::vec3> m_interpolated_positions;
+	std::vector<glm::vec3> m_interpolated_colors;
+	std::vector<glm::vec3> m_local_positions;
 	// for all
 	ScalarType m_total_mass;
 
@@ -127,6 +145,8 @@ public:
 	// for cloth
 	unsigned int m_dim[2]; // width and length
 	EigenVector3 m_corners[2]; // upper left and lower right corner
+
+
 
 	// for tet
 	// tet mesh location

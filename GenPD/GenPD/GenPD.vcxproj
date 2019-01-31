@@ -19,56 +19,122 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InterPolate.cpp" />
     <ClCompile Include="source\anttweakbar_wrapper.cpp" />
+    <ClCompile Include="source\arcsim_constraint.cpp" />
+    <ClCompile Include="source\arcsim_handle.cpp" />
+    <ClCompile Include="source\arcsim_simulation.cpp" />
+    <ClCompile Include="source\bvh.cpp" />
     <ClCompile Include="source\camera.cpp" />
+    <ClCompile Include="source\collision.cpp" />
     <ClCompile Include="source\constraint.cpp" />
     <ClCompile Include="source\constraint_attachment.cpp" />
     <ClCompile Include="source\constraint_penalty.cpp" />
     <ClCompile Include="source\constraint_spring.cpp" />
+    <ClCompile Include="source\Constraint_test.cpp" />
     <ClCompile Include="source\constraint_tet.cpp" />
+    <ClCompile Include="source\constraint_triangle.cpp" />
+    <ClCompile Include="source\dde.cpp" />
     <ClCompile Include="source\fps.cpp" />
+    <ClCompile Include="source\frac.cpp" />
+    <ClCompile Include="source\geometry.cpp" />
     <ClCompile Include="source\glsl_wrapper.cpp" />
     <ClCompile Include="source\handle.cpp" />
     <ClCompile Include="source\io_mesh.cpp" />
+    <ClCompile Include="source\lineserch.cpp" />
+    <ClCompile Include="source\magic.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\math_headers.cpp" />
     <ClCompile Include="source\matlab_debugger.cpp" />
     <ClCompile Include="source\mesh.cpp" />
+    <ClCompile Include="source\mesh_struct.cpp" />
+    <ClCompile Include="source\mesh_subset.cpp" />
+    <ClCompile Include="source\near_obs.cpp" />
+    <ClCompile Include="source\Obstacle.cpp" />
+    <ClCompile Include="source\optim.cpp" />
+    <ClCompile Include="source\physics.cpp" />
+    <ClCompile Include="source\plasticity.cpp" />
+    <ClCompile Include="source\pop.cpp" />
     <ClCompile Include="source\primitive.cpp" />
+    <ClCompile Include="source\Proximity.cpp" />
+    <ClCompile Include="source\referenceshape.cpp" />
+    <ClCompile Include="source\remesh.cpp" />
     <ClCompile Include="source\scene.cpp" />
     <ClCompile Include="source\selection_tool.cpp" />
     <ClCompile Include="source\simulation.cpp" />
+    <ClCompile Include="source\Spline.cpp" />
     <ClCompile Include="source\stb_image.c" />
     <ClCompile Include="source\stb_image_write.c" />
+    <ClCompile Include="source\sub_struct.cpp" />
+    <ClCompile Include="source\taucs.cpp" />
+    <ClCompile Include="source\tensor.cpp" />
     <ClCompile Include="source\tensor_math.cpp" />
     <ClCompile Include="source\tinyxml2.cpp" />
+    <ClCompile Include="source\transformation.cpp" />
+    <ClCompile Include="source\util.cpp" />
+    <ClCompile Include="source\vectors.cpp" />
     <ClCompile Include="source\wunderSVD\svd3x3.cpp" />
     <ClCompile Include="source\wunderSVD\WunderSVD3x3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InterPolate.h" />
     <ClInclude Include="source\anttweakbar_wrapper.h" />
+    <ClInclude Include="source\api.hpp" />
+    <ClInclude Include="source\arcsim_constraint.hpp" />
+    <ClInclude Include="source\arcsim_handle.hpp" />
+    <ClInclude Include="source\arcsim_simulation.hpp" />
+    <ClInclude Include="source\blockvectors.hpp" />
+    <ClInclude Include="source\bvh.hpp" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\clock.h" />
+    <ClInclude Include="source\collision.hpp" />
     <ClInclude Include="source\constraint.h" />
+    <ClInclude Include="source\dde.hpp" />
     <ClInclude Include="source\fps.h" />
+    <ClInclude Include="source\frac.hpp" />
+    <ClInclude Include="source\geometry.hpp" />
     <ClInclude Include="source\global_headers.h" />
     <ClInclude Include="source\glsl_wrapper.h" />
     <ClInclude Include="source\handle.h" />
+    <ClInclude Include="source\hogehoge.h" />
+    <ClInclude Include="source\inline.hpp" />
     <ClInclude Include="source\io_mesh.h" />
+    <ClInclude Include="source\magic.hpp" />
     <ClInclude Include="source\math_headers.h" />
     <ClInclude Include="source\matlab_debugger.h" />
     <ClInclude Include="source\mesh.h" />
+    <ClInclude Include="source\mesh_struct.hpp" />
+    <ClInclude Include="source\mesh_subset.hpp" />
+    <ClInclude Include="source\near_obs.hpp" />
+    <ClInclude Include="source\obstacle.hpp" />
     <ClInclude Include="source\opengl_headers.h" />
+    <ClInclude Include="source\optim.hpp" />
+    <ClInclude Include="source\physics.hpp" />
+    <ClInclude Include="source\plasticity.hpp" />
+    <ClInclude Include="source\pop.hpp" />
     <ClInclude Include="source\primitive.h" />
+    <ClInclude Include="source\proximity.hpp" />
+    <ClInclude Include="source\referenceshape.hpp" />
+    <ClInclude Include="source\remesh.hpp" />
     <ClInclude Include="source\scene.h" />
     <ClInclude Include="source\selection_tool.h" />
     <ClInclude Include="source\simulation.h" />
+    <ClInclude Include="source\Sparce.hpp" />
+    <ClInclude Include="source\spline.hpp" />
     <ClInclude Include="source\stb_image.h" />
     <ClInclude Include="source\stb_image_write.h" />
+    <ClInclude Include="source\sub_struct.hpp" />
+    <ClInclude Include="source\taucs.hpp" />
+    <ClInclude Include="source\tensor.hpp" />
     <ClInclude Include="source\tensor_math.h" />
     <ClInclude Include="source\timer.h" />
     <ClInclude Include="source\timer_wrapper.h" />
+    <ClInclude Include="source\tinycolormap.hpp" />
     <ClInclude Include="source\tinyxml2.h" />
+    <ClInclude Include="source\transformation.hpp" />
+    <ClInclude Include="source\util.hpp" />
+    <ClInclude Include="source\vectors.hpp" />
+    <ClInclude Include="source\winport.hpp" />
     <ClInclude Include="source\wunderSVD\igl_inline.h" />
     <ClInclude Include="source\wunderSVD\Singular_Value_Decomposition_Givens_QR_Factorization_Kernel.hpp" />
     <ClInclude Include="source\wunderSVD\Singular_Value_Decomposition_Jacobi_Conjugation_Kernel.hpp" />
@@ -88,7 +154,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{A7EA9050-764C-44D2-B7DF-29DB1C2E6375}</ProjectGuid>
     <RootNamespace>GenPD</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -100,7 +166,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -113,8 +179,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -136,12 +202,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Libs\Eigen_3_3_1;D:\Libs\glew\include;D:\Libs\freeglut\include;D:\libs\glm;D:\Libs\AntTweakBar\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Libs\AntTweakBar\lib;D:\Libs\freeglut\lib\x64;D:\Libs\glew\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\dev\lib\glew\include;C:\dev\lib\freeglut\include;C:\dev\lib\AntTweakBar\include;C:\dev\lib\glm;C:\dev\lib\eigen;D:\Libs\Eigen_3_3_1;D:\Libs\glew\include;D:\Libs\freeglut\include;D:\libs\glm;D:\Libs\AntTweakBar\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\dev\lib\glew\lib\Release\x64;C:\dev\lib\freeglut\lib\x64;C:\dev\lib\AntTweakBar\lib;D:\Libs\AntTweakBar\lib;D:\Libs\freeglut\lib\x64;D:\Libs\glew\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\glm;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\glew\include;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\Eigen_3_3_1;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\freeglut\include;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\AntTweakBar\include;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\Eigen_3_3_1\Eigen\src;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\freeglut\lib\x64;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\glew\lib;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\AntTweakBar\lib;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\glm;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\Eigen_3_3_1\Eigen;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\glm;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\glew\include;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\Eigen_3_3_1;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\freeglut\include;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\AntTweakBar\include;C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\Libs\Eigen_3_3_1\Eigen\src;$(IncludePath)</IncludePath>
@@ -156,10 +223,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/bigobj</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>AntTweakBar64.lib;freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -182,21 +250,31 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NO_VA_START_VALIDATION;CMAKE_INTDIR="Release";arcsim_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <OpenMPSupport>true</OpenMPSupport>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <AdditionalOptions>
       </AdditionalOptions>
-      <AdditionalIncludeDirectories>\source;\source\framework;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\kintako\Documents\Code\ARCSim\dependencies\alglib\include;C:\Users\kintako\Documents\Code\ARCSim\dependencies\taucs\src;C:\Users\kintako\Documents\Code\ARCSim\dependencies\jsoncpp\include;\source;\source\framework;C:\msys64\mingw64\include;C:\dev\lib\libpng\build\include;C:\Users\kintako\Documents\Code\QNforPD_check\GenPD\GenPD\source\arcsim;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4251;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>AntTweakBar64.lib;freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>AntTweakBar64.lib;freeglut.lib;glew32.lib;C:\dev\lib\zlib\build\lib\zlib.lib;C:\dev\lib\libpng\build\lib\libpng16.lib;C:\dev\lib\lapack\build\lib\libblas.lib;C:\dev\lib\lapack\build\lib\liblapack.lib;C:\dev\lib\lapack\build\lib\liblapacke.lib;..\lib\alglib.lib;..\lib\jsoncpp.lib;..\lib\taucs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/Users/kintako/Documents/Code/ARCSim/build/bin/$(Configuration);C:/Users/kintako/Documents/Code/ARCSim/build/lib/$(Configuration);C:/Users/kintako/Documents/Code/ARCSim/build/bin;C:/Users/kintako/Documents/Code/ARCSim/build/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

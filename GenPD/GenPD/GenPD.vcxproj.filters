@@ -48,9 +48,6 @@
     <Filter Include="Source Files\core\mesh">
       <UniqueIdentifier>{232c85a1-80e5-4060-815f-30e92f485b65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\core\constraints">
-      <UniqueIdentifier>{1083ce1b-fc37-401d-98e4-a4eb637d1313}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\core\simulation">
       <UniqueIdentifier>{ac08339d-2e17-46dc-a615-f39ce7aabe82}</UniqueIdentifier>
     </Filter>
@@ -69,11 +66,17 @@
     <Filter Include="Source Files\math\tensor">
       <UniqueIdentifier>{47262523-496f-4ac4-a333-c1dfa8dda8cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\add">
+      <UniqueIdentifier>{5f8b2908-8ad9-4537-9773-79865b4f5e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\constraint">
+      <UniqueIdentifier>{b7a034a3-4323-4946-a730-d6cf1d2fd62c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interpolation">
+      <UniqueIdentifier>{8a32dc67-cd81-484c-a326-c2a1379f108f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\wunderSVD\svd3x3.cpp">
       <Filter>Source Files\math\WunderSVD</Filter>
     </ClCompile>
@@ -110,21 +113,6 @@
     <ClCompile Include="source\mesh.cpp">
       <Filter>Source Files\core\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="source\constraint.cpp">
-      <Filter>Source Files\core\constraints</Filter>
-    </ClCompile>
-    <ClCompile Include="source\constraint_attachment.cpp">
-      <Filter>Source Files\core\constraints</Filter>
-    </ClCompile>
-    <ClCompile Include="source\constraint_penalty.cpp">
-      <Filter>Source Files\core\constraints</Filter>
-    </ClCompile>
-    <ClCompile Include="source\constraint_spring.cpp">
-      <Filter>Source Files\core\constraints</Filter>
-    </ClCompile>
-    <ClCompile Include="source\constraint_tet.cpp">
-      <Filter>Source Files\core\constraints</Filter>
-    </ClCompile>
     <ClCompile Include="source\simulation.cpp">
       <Filter>Source Files\core\simulation</Filter>
     </ClCompile>
@@ -146,11 +134,119 @@
     <ClCompile Include="source\camera.cpp">
       <Filter>Source Files\framework\camera</Filter>
     </ClCompile>
+    <ClCompile Include="source\vectors.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\geometry.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\util.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\referenceshape.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\dde.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Obstacle.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\magic.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\pop.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\lineserch.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tensor.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\collision.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\frac.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\near_obs.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\arcsim_simulation.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mesh_subset.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mesh_struct.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\plasticity.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\arcsim_constraint.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\transformation.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Spline.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\arcsim_handle.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\bvh.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\optim.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\physics.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\remesh.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\taucs.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\sub_struct.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Proximity.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>Source Files\add</Filter>
+    </ClCompile>
+    <ClCompile Include="source\constraint.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="source\constraint_attachment.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="source\constraint_penalty.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="source\constraint_spring.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Constraint_test.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="source\constraint_tet.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="source\constraint_triangle.cpp">
+      <Filter>Source Files\constraint</Filter>
+    </ClCompile>
+    <ClCompile Include="InterPolate.cpp">
+      <Filter>Source Files\Interpolation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\global_headers.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\wunderSVD\igl_inline.h">
       <Filter>Source Files\math\WunderSVD</Filter>
     </ClInclude>
@@ -220,9 +316,6 @@
     <ClInclude Include="source\mesh.h">
       <Filter>Source Files\core\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="source\constraint.h">
-      <Filter>Source Files\core\constraints</Filter>
-    </ClInclude>
     <ClInclude Include="source\simulation.h">
       <Filter>Source Files\core\simulation</Filter>
     </ClInclude>
@@ -243,6 +336,117 @@
     </ClInclude>
     <ClInclude Include="source\camera.h">
       <Filter>Source Files\framework\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="source\api.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\winport.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\util.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\vectors.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\blockvectors.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tensor.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bvh.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\arcsim_constraint.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\inline.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\referenceshape.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\proximity.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\magic.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\pop.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\sub_struct.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\frac.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\dde.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\arcsim_simulation.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\near_obs.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\transformation.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mesh_subset.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\plasticity.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\spline.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\obstacle.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\arcsim_handle.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\collision.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mesh_struct.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\optim.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\physics.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\remesh.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\taucs.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\geometry.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\hogehoge.h">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sparce.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\global_headers.h">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tinycolormap.hpp">
+      <Filter>Source Files\add</Filter>
+    </ClInclude>
+    <ClInclude Include="source\constraint.h">
+      <Filter>Source Files\constraint</Filter>
+    </ClInclude>
+    <ClInclude Include="InterPolate.h">
+      <Filter>Source Files\Interpolation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

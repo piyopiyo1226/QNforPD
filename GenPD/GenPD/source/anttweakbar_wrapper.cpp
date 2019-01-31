@@ -59,6 +59,8 @@ extern bool g_record;
 extern bool g_pause;
 extern bool g_show_mesh;
 extern bool g_show_wireframe;
+extern bool g_show_interpolatemesh;//check
+
 extern int  g_wireframe_linewidth;
 extern bool g_show_texture;
 
@@ -130,6 +132,7 @@ void AntTweakBarWrapper::Init()
 	// visualization
 	TwAddVarRW(m_control_panel_bar, "Mesh Body", TwType(sizeof(bool)), &(g_show_mesh), "group='Visualization'");
 	TwAddVarRW(m_control_panel_bar, "Wireframe", TwType(sizeof(bool)), &(g_show_wireframe), "group='Visualization'");
+	TwAddVarRW(m_control_panel_bar, "InterPolated Wire", TwType(sizeof(bool)), &(g_show_interpolatemesh), "group='Visualization'");//check
 	TwAddVarRW(m_control_panel_bar, "Line Width", TW_TYPE_INT32, &(g_wireframe_linewidth), "min=1 group='Visualization'");
 	TwAddVarRW(m_control_panel_bar, "Texture", TwType(sizeof(bool)), &(g_show_texture), "group='Visualization'");
 	TwAddVarRW(m_control_panel_bar, "Width", TW_TYPE_INT32, &(g_screen_width), "min=640 group='Screen Resolution'");
@@ -249,10 +252,25 @@ void AntTweakBarWrapper::Init()
 	TwEnumVal optimizationStyleEV[OPTIMIZATION_METHOD_TOTAL_NUM] = { \
 																	{OPTIMIZATION_METHOD_GRADIENT_DESCENT, "Gradient Descent"},\
 																	{OPTIMIZATION_METHOD_NEWTON, "Newton's Method"},\
-																	{OPTIMIZATION_METHOD_LBFGS, "L-BFGS (Our Method)"}
-																  };
+																	{OPTIMIZATION_METHOD_LBFGS, "L-BFGS (Our Method)"},\
+	{OPTIMIZATION_METHOD_LOCALGLOBAL, "Projective Dynamics"}, \
+	{OPTIMIZATION_TEST, "test"},													  };
+
+	TwEnumVal interpolateStyle[TYPE_TOTAL_NUM] = { 
+	\
+	{ Normal, "normal"}, \
+	{ flip ,  "flip"},\
+	{ Mode_1, "mode_1" }, \
+	{ Mode_2, "mode_2"}, \
+	{ Mode_3, "mode_3"}, \
+	};
+
 	TwType optimizationStyle = TwDefineEnum("OptimizationMethod", optimizationStyleEV, OPTIMIZATION_METHOD_TOTAL_NUM);
+	TwType interpolatemode = TwDefineEnum("InterPlatedMode", interpolateStyle, TYPE_TOTAL_NUM);
+
 	TwAddVarRW(m_sim_bar, "Optimization Method", optimizationStyle, &g_simulation->m_optimization_method, " group='Optimization' ");
+	TwAddVarRW(m_sim_bar, "InterPlatedMode", interpolatemode, &g_simulation->case_number, " group='Optimization' ");
+
 	TwAddVarRW(m_sim_bar, "Iterations/Frame", TW_TYPE_INT32, &g_simulation->m_iterations_per_frame, " group='Optimization' ");
 	//TwAddVarRW(m_sim_bar, "Jacobi iterations", TW_TYPE_INT32, &g_simulation->m_jacobi_iterations, "group='Optimization'");
 	TwAddVarRW(m_sim_bar, "Definiteness Fix", TwType(sizeof(bool)), &g_simulation->m_definiteness_fix, "group='Optimization'");
@@ -591,6 +609,7 @@ void AntTweakBarWrapper::SaveSettings()
 		outfile << "TotalFrame          " << g_total_frame << std::endl;
 		outfile << "MeshBody            " << g_show_mesh << std::endl;
 		outfile << "Wireframe           " << g_show_wireframe << std::endl;
+	//	outfile << "Wireframe           " << g_show_interpolatemesh << std::endl;//check
 		outfile << "Wireframe           " << g_wireframe_linewidth << std::endl;
 		outfile << "Texture             " << g_show_texture << std::endl;
 		outfile << "ScreenWidth         " << g_screen_width << std::endl;
@@ -677,7 +696,6 @@ void AntTweakBarWrapper::SaveSettings()
 void AntTweakBarWrapper::LoadSettings()
 {
 	bool successfulRead = false;
-
 	//read file
 	std::ifstream infile;
 	infile.open(DEFAULT_CONFIG_FILE, std::ifstream::in);
@@ -691,6 +709,7 @@ void AntTweakBarWrapper::LoadSettings()
 		infile >> ignoreToken >> g_total_frame;
 		infile >> ignoreToken >> g_show_mesh;
 		infile >> ignoreToken >> g_show_wireframe;
+	//	infile >> ignoreToken >> g_show_interpolatemesh;//check
 		infile >> ignoreToken >> g_wireframe_linewidth;
 		infile >> ignoreToken >> g_show_texture;
 		infile >> ignoreToken >> g_screen_width;
@@ -782,6 +801,7 @@ void AntTweakBarWrapper::DefaultSettings()
 	g_total_frame = 1000;
 	g_show_mesh = true;
 	g_show_wireframe = false;
+	g_show_interpolatemesh = false;//check
 	g_wireframe_linewidth = 1;
 	g_show_texture = false;
 	g_screen_width = 1024;

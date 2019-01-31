@@ -30,7 +30,7 @@
 
 #include "constraint.h"
 #include "wunderSVD/svd3x3.h"
-//#include "SVD"
+
 
 #ifdef ENABLE_MATLAB_DEBUGGING
 #include "matlab_debugger.h"
@@ -276,7 +276,7 @@ ScalarType TetConstraint::EvaluateEnergy(const VectorX& x)
 	}
 	break;
 	case MATERIAL_TYPE_NEOHOOKEAN_EXTEND_LOG:
-	{
+	{ 
 		EigenMatrix3 FtF = F.transpose() * F;
 		ScalarType I1 = FtF.trace();
 		ScalarType J = F.determinant();

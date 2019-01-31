@@ -67,6 +67,9 @@ typedef enum
 	OPTIMIZATION_METHOD_GRADIENT_DESCENT,
 	OPTIMIZATION_METHOD_NEWTON,
 	OPTIMIZATION_METHOD_LBFGS,
+	//add PD 
+	OPTIMIZATION_TEST,
+	OPTIMIZATION_METHOD_LOCALGLOBAL, //please chosse the integratipon method in  INTEGRATION_IMPLICIT_EULER
 	OPTIMIZATION_METHOD_TOTAL_NUM
 
 } OptimizationMethod;
@@ -92,6 +95,16 @@ typedef enum
 	LS_TYPE_TOTAL_NUM,
 } LinesearchType;
 
+typedef enum
+{
+	Normal,
+	flip,
+	Mode_1,
+	Mode_2,
+	Mode_3,
+	TYPE_TOTAL_NUM,
+} MODE;
+
 class Simulation
 {
 	friend class AntTweakBarWrapper;
@@ -112,11 +125,15 @@ public:
 	bool TryToToggleAttachmentConstraint(const EigenVector3& p0, const EigenVector3& dir); // true if hit some vertex/constraint
 	void SelectAtttachmentConstraint(AttachmentConstraint* ac);
 	void UnselectAttachmentConstraint();
-	AttachmentConstraint* AddAttachmentConstraint(unsigned int vertex_index); // add one attachment constraint at vertex_index
+	AttachmentConstraint* AddAttachmentConstraint(unsigned int vertex
+	); // add one attachment constraint at vertex_index
 	AttachmentConstraint* AddAttachmentConstraint(unsigned int vertex_index, const EigenVector3& target); // add one attachment constraint at vertex_index
 	void MoveSelectedAttachmentConstraintTo(const EigenVector3& target); // move selected attachement constraint to target
 	void SaveAttachmentConstraint(const char* filename);
 	void LoadAttachmentConstraint(const char* filename);
+	
+	void Simulation::LoadLocalMesh(const char* filename,VectorX &vertices, VectorX &uvpositions, std::vector<int> &triangle_list);
+
 
 	// handles
 	void NewHandle(const std::vector<unsigned int>& indices, const glm::vec3 color);
@@ -176,6 +193,8 @@ public:
 	inline Mesh* GetEigenVectorVisMesh(){ return m_eigenvector_vis_mesh; }
 	void ResetVisualizationMeshHeight();
 
+	MODE case_number = Normal;
+
 	// inline functions
 	inline void SetReprefactorFlag() 
 	{
@@ -187,6 +206,9 @@ public:
 	inline void SetScene(Scene* scene) {m_scene = scene;}
 	inline void SetStepMode(bool step_mode) {m_step_mode = step_mode;}
 	inline ScalarType Timestep() { return m_h; }
+	// for optimization method, number of iterations
+	unsigned int m_iterations_per_frame;
+
 
 protected:
 
@@ -261,12 +283,10 @@ protected:
 	// 0.5(x-y)^2 M (x-y) + (c) * h^2 * E(x) - h^2 * x^T * z;
 	VectorX m_y;
 	VectorX m_z;
+	VectorX temp_test;
 
 	// external force (gravity, wind, etc...)
 	VectorX m_external_force;
-
-	// for optimization method, number of iterations
-	unsigned int m_iterations_per_frame;
 
 	// for optimization method
 	unsigned int m_current_iteration;
@@ -283,9 +303,21 @@ protected:
 	VectorX m_ls_prefetched_gradient;
 	ScalarType m_ls_prefetched_energy;
 
-	// local global method
+
 	bool m_enable_openmp;
 	VectorX m_last_descent_dir;
+	//------------------------sugg local global method------------------------------------------------------------------//
+	SparseMatrix Jacobian, Init_Jacobian,Map_Jacobian;
+	void SetJacobianMatrix();
+	void Simulation::TestComputeJacobianMatrix(SparseMatrix& J, int number);
+	void ComputeJacobianMatrix(SparseMatrix& J);
+	void ComputeDVector(const VectorX& x, VectorX& d);
+
+
+	
+	void Simulation::LocalGlobalKernelLinearSolve(VectorX & r, VectorX &rhs);
+//	void Simulation::Simplecollision_out(VectorX& v) { ; };//m_mesh->m_current_velocities 
+	//-----------------------------------------------------------------------------------------//
 
 	// for prefactorization
 	SparseMatrix m_weighted_laplacian_1D;
@@ -300,19 +332,21 @@ protected:
 	Eigen::PardisoLLT<SparseMatrix, Eigen::Upper> m_prefactored_solver_restpose_hessian;
 	Eigen::PardisoLLT<SparseMatrix, Eigen::Upper> m_prefactored_solver_dual;
 #else
+
 	Eigen::SimplicialLLT<SparseMatrix, Eigen::Upper> m_prefactored_solver_1D;
 	Eigen::SimplicialLLT<SparseMatrix, Eigen::Upper> m_prefactored_solver;
 	Eigen::SimplicialLLT<SparseMatrix, Eigen::Upper> m_newton_solver;
 #endif
 	Eigen::ConjugateGradient<SparseMatrix> m_preloaded_cg_solver_1D;
 	Eigen::ConjugateGradient<SparseMatrix> m_preloaded_cg_solver;
-
+	Eigen::ConjugateGradient<SparseMatrix> jaco_1D;
 	// for Newton's method
 	bool m_definiteness_fix;
 
 	// solver type
 	SolverType m_solver_type;
 	int m_iterative_solver_max_iteration;
+
 
 	// LBFGS
 	bool m_lbfgs_restart_every_frame;
@@ -328,6 +362,10 @@ protected:
 	std::deque<VectorX> m_lbfgs_y_queue;
 	std::deque<VectorX> m_lbfgs_s_queue;
 	QueueLBFGS* m_lbfgs_queue;
+
+	//for Local Global SOlver ------------------suggest
+	bool local_global_need_update_H0; //check the first iteration , this is 
+
 
 	// volume
 	ScalarType m_restshape_volume;
@@ -346,8 +384,11 @@ protected:
 	ScalarType m_animation_swing_amp;
 	ScalarType m_animation_swing_dir[3];
 
-	// hard coded collision plane for demo
+	// hard coded on plane for demo
 	bool m_processing_collision;
+
+
+	bool Simulation::performTest(VectorX& x);
 
 private:
 
@@ -369,8 +410,15 @@ private:
 	bool performGradientDescentOneIteration(VectorX& x);
 	bool performNewtonsMethodOneIteration(VectorX& x);
 	bool performLBFGSOneIteration(VectorX& x);// our method
-	void LBFGSKernelLinearSolve(VectorX& r, VectorX gf_k, ScalarType scaled_identity_constant);
+	//-----------------------------------------------------------------suggest PD----------------------------------//
+	bool performLocalGlobalOneIteration(VectorX& x);
+	void Simulation::CalcStrain();
+	void Simulation::Simplecollision( VectorX& x); //for collision
+	void Simulation::Simplecollision_out(VectorX& x, VectorX& v);//m_mesh->m_current_velocities 
+	//-----------------------------------------------------------------------------------------------------------//
 
+	void LBFGSKernelLinearSolve(VectorX& r, VectorX gf_k, ScalarType scaled_identity_constant);
+	
 	// key initializations and constants computations
 	void computeConstantVectorsYandZ();
 	void updatePosAndVel(const VectorX& new_pos);
@@ -446,6 +494,8 @@ private:
 	void factorizeDirectSolverLLT(const SparseMatrix& A, Eigen::SimplicialLLT<SparseMatrix, Eigen::Upper>& lltSolver, char* warning_msg = ""); // factorize matrix A using LLT decomposition
 
 	void generateRandomVector(const unsigned int size, VectorX& x); // generate random vector varing from [-1 1].
+
+	int step = 0;
 };
 
 #endif

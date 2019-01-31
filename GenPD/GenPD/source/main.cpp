@@ -84,6 +84,10 @@ int  g_wireframe_linewidth = 1;
 bool g_show_texture = false;
 bool g_texture_load_succeed = false;
 
+bool g_show_interpolatemesh = false;
+
+
+
 //----------Mouse Control--------------------//
 int g_mouse_old_x, g_mouse_old_y;
 int g_mouse_wheel_pos;
@@ -170,7 +174,6 @@ void test()
 
 int main(int argc, char ** argv)
 {
-	//test();
 
     // gl init
     glutInit(&argc, argv);
@@ -180,8 +183,8 @@ int main(int argc, char ** argv)
 	glutInitDisplayMode(GLUT_RGBA);
 #endif
 
-    glutCreateWindow("Mass-Spring System Simulation T.L.");
-    glEnable(GL_DEPTH_TEST);
+    glutCreateWindow("Projective dynamic Simulation T.L.");
+    glEnable(GL_DEPTH_TEST); 
     glDepthFunc(GL_LEQUAL);
     glutInitWindowSize(g_screen_width, g_screen_height);
     glViewport(0, 0, g_screen_width, g_screen_height);
@@ -189,10 +192,10 @@ int main(int argc, char ** argv)
     // user init
     init();
 	glutReshapeWindow(g_screen_width, g_screen_height);
-
+	
     // bind function callbacks
     glutDisplayFunc(display);
-    glutTimerFunc(g_timestep, timeout, g_timestep);
+    glutTimerFunc(g_timestep, timeout, g_timestep);//check
     glutReshapeFunc(resize);
     glutKeyboardFunc(key_press);
     glutMouseFunc(mouse_click);
@@ -203,7 +206,7 @@ int main(int argc, char ** argv)
     glutIdleFunc(display);
 
 	omp_set_num_threads(6);
-
+	
     glutMainLoop();
 
     return 0;
@@ -212,7 +215,7 @@ int main(int argc, char ** argv)
 void resize(int width, int height) {
 	g_screen_width = width;
 	g_screen_height = height;
-    //set the viewport, more boilerplate
+    //set the viewport, more boilerplate 
     glViewport(0, 0, width, height);
     g_camera->ResizeWindow(width, height);
 	g_config_bar->ChangeTwBarWindowSize(g_screen_width, g_screen_height);
@@ -285,7 +288,53 @@ void timeout(int value)
 		// update mesh
         g_simulation->Update();
 		g_mesh->Update();
-		//g_global_timer.Toc();
+		//calc error fro, the PD
+		//add here{
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iostream>
+		if (g_simulation->case_number == Normal)
+		{
+			std::ofstream outfile;
+			std::stringstream  filename;// 
+			filename << "PD_" << g_simulation->m_iterations_per_frame << "_ite_" << g_current_frame << ".csv";
+			std::string result = filename.str();
+			outfile.open(result.c_str());
+			for (int i = 0; i < g_mesh->m_current_positions.size()/3; i++)
+			{
+				outfile << g_mesh->m_current_positions[3 * i + 0] << "," << g_mesh->m_current_positions[3 * i + 1] << "," << g_mesh->m_current_positions[3 * i + 2] << std::endl;
+			}
+			outfile.close();
+		}
+		else
+		{
+			//calculate error from pd
+			std::ifstream inputfile;
+			std::stringstream  filename;
+			filename << "PD_" << g_simulation->m_iterations_per_frame << "_ite_" << g_current_frame << ".csv";
+			std::string result = filename.str();
+			inputfile.open(result.c_str());
+
+			g_mesh->m_local_positions.resize(g_mesh->m_current_positions.size());
+			int i = 0;
+			std::string str;
+			while (getline(inputfile, str)) {
+				std::string token;
+				std::istringstream stream(str);
+
+				int dim = 0;
+				while (std::getline(stream, token, ','))
+				{
+					double temp = std::stod(token);
+					g_mesh->m_local_positions[i][dim] = temp;
+					dim++;
+				}
+				i++;
+
+			}
+		}
+		//}		//g_global_timer.Toc();
 		//total_time += g_global_timer.Duration();
 		//if ((g_current_frame+1)%g_interval == 0)
 		//{
@@ -310,18 +359,33 @@ void display() {
 
     // Draw world and cloth (using programmable shaders)
     g_renderer->ActivateShaderprog();
-    g_scene->Draw(g_renderer->getVBO());
+   	g_scene->Draw(g_renderer->getVBO());
 
 	if (g_show_mesh)
 	{
-		g_mesh->Draw(g_renderer->getVBO(), g_show_texture & g_texture_load_succeed);
+		if (g_simulation->case_number == Normal)
+		{
+			g_mesh->Draw(g_renderer->getVBO(), g_show_texture & g_texture_load_succeed);
+		}
+		else
+		{
+			g_mesh->Draw_Error(g_renderer->getVBO(), g_show_texture & g_texture_load_succeed);
+		}
 	}
+	
 	if (g_show_wireframe)
 	{
 		g_mesh->DrawWireFrame(g_renderer->getVBO(), g_wireframe_linewidth);
 	}
-	g_simulation->Draw(g_renderer->getVBO());
+	//g_show_interpolatemesh = true;
+	if (g_show_interpolatemesh)
+	{
+	
+		g_mesh->DrawInterPolatedMesh(g_renderer->getVBO(), g_wireframe_linewidth);
+	}
 
+	
+	 
 	// highlight selections
 	g_selection_tool->HighlightSelectedVertices(g_renderer->getVBO());
 
@@ -348,7 +412,7 @@ void key_press(unsigned char key, int x, int y) {
     if (!TwEventKeyboardGLUT(key, x, y))
     {
         switch(key) {
-        case 32:
+        case 32://space
             g_pause = !g_pause;
             break;
 		case 'q':
@@ -602,7 +666,7 @@ void mouse_motion(int x, int y)
 			{
 				g_camera->MouseChangeHeadPitch(0.2f, dx, dy);
 			}
-			else
+		/*	else
 			{
 				g_selection_tool->SelectSecondPoint(x, y, g_screen_width, g_screen_height);
 				if (g_selection_tool->GetMode() == GUI_MODE_TRANSLATION)
@@ -616,7 +680,7 @@ void mouse_motion(int x, int y)
 					g_camera->GetCurrentRotation(x, y, axis, theta);
 					g_simulation->RotateHandleTemporary(axis, theta);
 				}
-			}
+			}*/
 		}
 		else if (g_button_mask & 0x02)
 		{// middle button
@@ -738,8 +802,7 @@ void init()
 	glm::vec3 temp_pos = glm::vec3(0.0, 2.5, 0.0);
 	glm::vec3 temp_vel = glm::vec3( 0.0, 0.0,0.0);//-0.4 
 
-	//g_primitive = new Primitive(CUBE, temp_pos, temp_vel);
-	//g_primitive = new Plane();
+	//add primitive for collision
 	g_primitive = new  Sphere(temp_pos, temp_vel,1);
 	// Sphere(const glm::vec3 pos, const glm::vec3 vel, float radius) 
 	g_scene->InsertPrimitve(g_primitive);
@@ -847,9 +910,9 @@ void TW_CALL reset_simulation(void*)
 
 	// reset simulation
 	g_simulation->SetMesh(g_mesh);
-	g_simulation->ResetVisualizationMesh();
-	g_simulation->SetVisualizationMesh();
-	g_simulation->ResetVisualizationMeshHeight();
+	//g_simulation->ResetVisualizationMesh();
+	//g_simulation->SetVisualizationMesh();
+	//g_simulation->ResetVisualizationMeshHeight();
 
 
 	g_simulation->SetScene(g_scene);
@@ -904,12 +967,60 @@ void TW_CALL step_through(void*)
     // enable step mode
 	g_simulation->SetStepMode(true);
     // update cloth
-    g_simulation->Update();
+    g_simulation->Update();//after here calculate the error
+
     // disable step mode
 	g_simulation->SetStepMode(false);
 
 	g_mesh->Update();
-
+//add here{
+//#include <fstream>
+//#include <string>
+//#include <sstream>
+//#include <iostream>
+//	if (g_simulation->case_number == Normal)
+//	{
+//		std::ofstream outfile;
+//		std::stringstream  filename;// = total_num + "_ite_" + filenum;
+//		filename << "PD_" << g_simulation->m_iterations_per_frame << "_ite_" << g_current_frame << ".csv";
+//		std::string result = filename.str();
+//		outfile.open(result.c_str());
+//		for (int i = 0; i < g_mesh->m_current_positions.size(); i++)
+//		{
+//			
+//			outfile << g_mesh->m_current_positions[3 * i + 0] << "," << g_mesh->m_current_positions[3 * i + 1] << "," << g_mesh->m_current_positions[3 * i + 2] << std::endl;
+//
+//		}
+//		outfile.close();
+//	}
+//	else
+//	{
+//		//calculate error from pd
+//		std::ifstream inputfile;
+//		std::stringstream  filename;
+//		filename << "PD_" << g_simulation->m_iterations_per_frame << "_ite_" << g_current_frame << ".csv";
+//		std::string result = filename.str();
+//		inputfile.open(result.c_str());
+//	
+//		g_mesh->m_local_positions.resize(g_mesh->m_current_positions.size());
+//			int i = 0;
+//			std::string str;
+//			while (getline(inputfile, str)) {
+//				std::string token;
+//				std::istringstream stream(str);
+//				
+//				int dim = 0;
+//				while (std::getline(stream, token, ','))
+//				{
+//					double temp = std::stod(token);
+//					g_mesh->m_local_positions[i][dim] = temp;
+//					dim++;
+//				}
+//				i++;
+//
+//			}
+//	}
+	//}
     g_current_frame++;
 }
 

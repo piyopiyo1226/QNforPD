@@ -1,2 +1,9 @@
-GenPD/GenPD/x64
-GenPD/GenPD/Win32
+.vs
+Release
+Debug
+x64
+Win32
+output
+*.csv
+*.obj
+*.db

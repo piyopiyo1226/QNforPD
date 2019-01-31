@@ -224,8 +224,8 @@ bool XMLSceneVisitor::VisitEnter(const tinyxml2::XMLElement& element, const tiny
 		R = element.DoubleAttribute("major");
 		r = element.DoubleAttribute("minor");
 
-		//m_current = new Sphere(center, velocity, R);
-		m_current = new Torus(center, velocity, R, r);
+		m_current = new Sphere(center, velocity, R);
+		//m_current = new Torus(center, velocity, R, r);
 		return true;
 	}
 	else if (std::string(element.Value()) == "cube")

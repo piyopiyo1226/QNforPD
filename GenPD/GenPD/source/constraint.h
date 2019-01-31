@@ -56,7 +56,9 @@ typedef enum
 	CONSTRAINT_TYPE_COLLISION,
 	CONSTRAINT_TYPE_TET,
 	CONSTRAINT_TYPE_NULL,
-	CONSTRAINT_TYPE_TOTAL_NUM
+	CONSTRAINT_TYPE_TOTAL_NUM,
+	//--suggadd
+	CONSTRAINT_TYPE_TRI
 } ConstraintType;
 
 class Constraint
@@ -67,6 +69,7 @@ public:
 	Constraint(ConstraintType type, ScalarType stiffness);
 	Constraint(const Constraint& other);
 	virtual ~Constraint();
+
 
 	virtual void GetMaterialProperty(ScalarType& stiffness) { stiffness = m_stiffness; }
 	virtual void GetMaterialProperty(MaterialType& type, ScalarType& mu, ScalarType& lambda, ScalarType& kappa) { std::cout << "Warning: reach <Constraint::GetMaterialProperty> base class virtual function." << std::endl; }
@@ -98,6 +101,21 @@ public:
 
 	// inline
 	const ConstraintType& Type() { return m_constraint_type; }
+
+	//--------------------------------------sugge add for loca lglocal-----------------------------------------------//
+	virtual void EvaluateJMatrix(unsigned int index, std::vector<SparseMatrixTriplet>& J_triplets) { "warning "; };
+	virtual void EvaluateDVector(unsigned int index, const VectorX& x, VectorX& d) { "warning "; };
+	virtual void projection(const VectorX &x, EigenMatrix3X & project, int id) { "warning "; };
+	virtual void projection_set(const VectorX &x, EigenMatrix2X & projection, int id) { "warning "; };
+	virtual void projection_set_after(const VectorX &x, EigenMatrix2X & projection, EigenMatrix3X & project, int id) { "warning "; };
+	virtual void projection_uvs(const VectorX &x, EigenMatrix2X & projection, int id) { "warning "; };//have to add the ides for 3indez
+	virtual void projection_interpolate_normal(const VectorX &x, EigenMatrix2X & projection, EigenMatrix3X & project, int id, std::vector<int> triangle_list) { "warning "; };//
+
+	virtual void Collisionprojection( VectorX& x) { "aa"; };
+	void Collisionout(VectorX& x, VectorX& v) { ; }//
+	//--------------------------------sugges---------------------------------------------------------------------//
+
+
 
 protected:
 	ConstraintType m_constraint_type;
@@ -178,6 +196,9 @@ public:
 	virtual void  ApplyHessian(const VectorX& x, VectorX& b); // b = H*x, applying hessian for this block only;
 	virtual void  EvaluateWeightedLaplacian(std::vector<SparseMatrixTriplet>& laplacian_triplets);
 	virtual void  EvaluateWeightedLaplacian1D(std::vector<SparseMatrixTriplet>& laplacian_1d_triplets);
+	//--sugg
+	virtual void CollisionSpringConstraint::Collisionprojection( VectorX& x);
+	void CollisionSpringConstraint::Collisionout(VectorX& x,VectorX& v);
 
 protected:
 	unsigned int m_p0;
@@ -212,15 +233,41 @@ public:
 	virtual void  EvaluateWeightedLaplacian(std::vector<SparseMatrixTriplet>& laplacian_triplets);
 	virtual void  EvaluateWeightedDiagonal(std::vector<SparseMatrixTriplet>& diagonal_triplets);
 	virtual void  EvaluateWeightedLaplacian1D(std::vector<SparseMatrixTriplet>& laplacian_1d_triplets);
+	//--------------------------------sugges---------------------------------------------------------------------//
+	void EvaluateJMatrix(unsigned int index, std::vector<SparseMatrixTriplet>& J_triplets);
+	void EvaluateDVector(unsigned int index, const VectorX& x, VectorX& d);
 
+	//-----------------------------------------------------------------------------------------------------------//
 protected:
 	unsigned int m_p1, m_p2;
 	EigenVector3 m_g1, m_g2;
 	EigenMatrix3 m_H;
-	// rest length
+	// rest length     
 	ScalarType m_rest_length;
 };
+//-----------------------sugge
+class TriangleConstraint : public Constraint
+{
+public:
+	TriangleConstraint(int id_0, int id_1, int id_2, const VectorX &x, ScalarType rangemin , ScalarType rangemax, ScalarType weight);
+	virtual ~TriangleConstraint() {};
 
+	double clamp(double n, double lower, double upper);
+	void projection(const VectorX &x, EigenMatrix3X & project,int id);
+
+	virtual void EvaluateJMatrix(unsigned int index, std::vector<SparseMatrixTriplet>& J_triplets);
+	virtual void EvaluateWeightedLaplacian1D(std::vector<SparseMatrixTriplet>& laplacian_1d_triplets);
+
+
+protected:
+	EigenMatrix2 rest;
+	ScalarType range_min;
+	ScalarType range_max;
+	int ids[3];// , id_1, id_2;//this is for the triangle indez
+	Eigen::Matrix<ScalarType, 2, 3>  m_G;
+
+};
+//-----------------------------------------------------
 class TetConstraint : public Constraint
 {
 public:
@@ -255,9 +302,6 @@ public:
 
 	// set mass matrix
 	ScalarType SetMassMatrix(std::vector<SparseMatrixTriplet>& m, std::vector<SparseMatrixTriplet>& m_1d);
-
-	// accesser
-	//inline const ScalarType& Volume() { return m_W; }
 
 public:
 	// for ghost force detection and visualization
@@ -306,4 +350,31 @@ protected:
 	EigenVector3 m_ghost_force;
 };
 
+//-----------------------sugge
+class TestConstraint : public Constraint
+{
+public:
+	TestConstraint(int id_0, int id_1, int id_2, const VectorX &x, ScalarType rangemin, ScalarType rangemax, ScalarType weight);
+	virtual ~TestConstraint() {};
+	TestConstraint(int id_0, int id_1, int id_2, const std::vector<float> &x, ScalarType rangemin, ScalarType rangemax, ScalarType weight);
+	TestConstraint(int id_0, int id_1, int id_2, const VectorX &_temp_uv_added, ScalarType rangemin, ScalarType rangemax, ScalarType weight,int tem);
+
+	double clamp(double n, double lower, double upper);
+	void projection(const VectorX &x, EigenMatrix3X & project, int id);
+	void projection_set_after(const VectorX &x, EigenMatrix2X & projection, EigenMatrix3X & project, int id);
+	void projection_set(const VectorX &x, EigenMatrix2X & projection, int id);
+	void projection_uvs(const VectorX &x, EigenMatrix2X & projection, int id);//have to add the ides for 3indez
+	virtual void projection_interpolate_normal(const VectorX &x, EigenMatrix2X & projection, EigenMatrix3X & project, int id, std::vector<int> triangle_list);//
+
+	virtual void EvaluateJMatrix(unsigned int index, std::vector<SparseMatrixTriplet>& J_triplets);
+	virtual void EvaluateWeightedLaplacian1D(std::vector<SparseMatrixTriplet>& laplacian_1d_triplets);
+
+protected:
+	EigenMatrix2 rest;
+	EigenMatrix3 Dm_inv;
+	ScalarType range_min;
+	ScalarType range_max;
+	int ids[3];// , id_1, id_2;//this is for the triangle indez
+	Eigen::Matrix<ScalarType, 2, 3>  m_G;
+};
 #endif

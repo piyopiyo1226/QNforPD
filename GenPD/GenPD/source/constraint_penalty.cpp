@@ -208,3 +208,33 @@ void CollisionSpringConstraint::EvaluateWeightedLaplacian1D(std::vector<SparseMa
 	ScalarType ks = m_stiffness;
 	laplacian_1d_triplets.push_back(SparseMatrixTriplet(m_p0, m_p0, ks));
 }
+//--suggestt
+void CollisionSpringConstraint::Collisionprojection( VectorX& x)
+{
+	if (IsActive(x))
+	{
+		// energy
+		//m_energy = 0.5*(m_stiffness)*(x.block_vector(m_p0) - m_fixed_point).squaredNorm();
+		// gradient
+		//m_g = (m_stiffness)*
+		x.block_vector(m_p0) = m_fixed_point;
+	}
+	else
+	{
+		m_energy = 0;
+		m_g.setZero();
+	}
+
+}
+void CollisionSpringConstraint::Collisionout(VectorX &x, VectorX& v)
+{
+	EigenVector3 temp = v.block_vector(m_p0);
+	temp(1) = -1.0*temp(1);
+
+	v.block_vector(m_p0) = temp;//
+
+	x.block_vector(m_p0) -= (x.block_vector(m_p0) - m_fixed_point);
+	//-= ((v.block_vector(m_p0) - m_fixed_point));// .dot(m_normal) *m_normal;
+
+}
+

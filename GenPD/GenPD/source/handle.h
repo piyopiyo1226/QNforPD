@@ -71,7 +71,8 @@ public:
 	void Update();
 
 	bool Select(std::vector<glm::vec3> ray);
-	bool Select(std::vector<glm::vec3> ray, float& distance);
+	bool Select(std::vector<glm::vec3> ray, float&
+	);
 	ScalarType BoundingBoxSize();
 	glm::vec3 GetCoM();
 	glm::vec3 GetLocalCoM();

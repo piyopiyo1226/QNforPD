@@ -1,9 +1,12 @@
-﻿  anttweakbar_wrapper.cpp
-c:\users\kintako\desktop\quasi-newton-methods-for-real-time-simulation-of-hyperelastic-materials-master\libs\eigen_3_3_1\eigen\src/Core/arch/CUDA/Half.h : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
-  コード生成しています。
-  402 of 22461 functions ( 1.8%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    79 functions had inline decision re-evaluated but remain unchanged
-  コード生成が終了しました。
-  GenPD.vcxproj -> C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\GenPD\x64\Release\GenPD.exe
-  GenPD.vcxproj -> C:\Users\kintako\Desktop\Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials-master\GenPD\x64\Release\GenPD.pdb (Full PDB)
+﻿  simulation.cpp
+source\simulation.cpp(283): warning C4477: 'sprintf_s' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 2 は型 'unsigned __int64' です
+  source\simulation.cpp(283): note: 書式文字列に '%zd' を使用することをお勧めします
+source\simulation.cpp(287): warning C4477: 'sprintf_s' : 書式文字列 '%d' には、型 'int' の引数が必要ですが、可変個引数 2 は型 'unsigned __int64' です
+  source\simulation.cpp(287): note: 書式文字列に '%zd' を使用することをお勧めします
+source\simulation.cpp(1253): warning C4101: 'ignore': ローカル変数は 1 度も使われていません。
+source\simulation.cpp(2235): warning C4804: '>': 演算中の 'bool' 型の使用方法が安全ではありません
+source\simulation.cpp(2116): warning C4101: 'current_energy': ローカル変数は 1 度も使われていません。
+source\simulation.cpp(2164): warning C4101: 'l': ローカル変数は 1 度も使われていません。
+source\simulation.cpp(2299): warning C4101: 'current_energy': ローカル変数は 1 度も使われていません。
+source\simulation.cpp(3681): warning C4101: 'face': ローカル変数は 1 度も使われていません。
+  GenPD.vcxproj -> C:\Users\kintako\Documents\Code\QNforPD_test\GenPD\x64\Release\GenPD.exe

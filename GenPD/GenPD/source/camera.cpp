@@ -41,10 +41,10 @@ Camera::~Camera(void)
 void Camera::Reset(int width, int height)
 {
 	// setup default camera parameters
-	m_eye_distance = 15.0;
-	m_head = 30.0;
-	m_pitch = 45.0;
-	m_lookat = glm::vec3(0.0, 4.5, 0.0);
+	m_eye_distance = 5.0;
+	m_head = 0.0;
+	m_pitch = 0.0;
+	m_lookat = glm::vec3(0.0, 0.0, -10.0);
 	m_up = glm::vec3(0.0, 1.0, 0.0);
 	m_fovy = 60.0;
 	m_width = width;
@@ -129,6 +129,7 @@ void Camera::Lookat(Mesh* mesh)
 
 	EigenVector3 lookat = mesh->m_current_positions.block_vector(mid_index);
 	m_lookat = glm::vec3(lookat[0], lookat[1], lookat[2]);
+	//std::cout << "look" << lookat[0] <<":"<< lookat[1]<< ":" << lookat[2]<< "std::endl;
 	updateViewMatrix();
 }
 
@@ -145,20 +146,22 @@ void Camera::DrawAxis()
     // change view matrix.
 	glm::vec3 axis_cam_pos = float(2.0) * glm::normalize(m_position - m_lookat);
 	glLoadMatrixf(&(glm::lookAt(axis_cam_pos, glm::vec3(0.0, 0.0, 0.0), m_up)[0][0]));
-
 	// change viewport
     glViewport(m_width * 15 / 16, 0, m_width / 16, m_height / 16);
 
     //Draw axis.
     glBegin(GL_LINES);
+	//red x
     glColor3d(1.0, 0.0, 0.0);
     glVertex3d(0.0, 0.0, 0.0);
     glVertex3d(1.0, 0.0, 0.0);
 
+	//green y
     glColor3d(0.0, 1.0, 0.0);
     glVertex3d(0.0, 0.0, 0.0);
     glVertex3d(0.0, 1.0, 0.0);
 
+	//blue z
     glColor3d(0.0, 0.0, 1.0);
     glVertex3d(0.0, 0.0, 0.0);
     glVertex3d(0.0, 0.0, 1.0);
@@ -184,7 +187,7 @@ void Camera::MouseChangeLookat(float coe, float dx, float dy)
 	glm::vec3 vdir(m_lookat - m_position);
 	glm::vec3 u(glm::normalize(glm::cross(vdir, m_up)));
 	glm::vec3 v(glm::normalize(glm::cross(u, vdir)));
-
+	std::cout << m_lookat[0] << ":" << m_lookat[1] << ":" << m_lookat[2] << std::endl;
 	m_lookat += coe * (dy * v - dx * u);
 	updateViewMatrix();
 }

@@ -69,7 +69,7 @@ void Primitive::change_color(const glm::vec3& color)
 	}
 }
 
-void Primitive::Draw(const VBO& vbos)
+void Primitive::Draw(const VBO& vbos)//‚±‚±‚É‚à‚Ç‚é
 {
 	//drawint primitive
 	// position

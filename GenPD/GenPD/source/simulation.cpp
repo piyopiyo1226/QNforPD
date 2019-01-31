@@ -34,6 +34,8 @@
 
 #include <Eigen/Eigenvalues>
 
+
+#include "tinycolormap.hpp"
 #include "simulation.h"
 #include "timer_wrapper.h"
 
@@ -125,8 +127,10 @@ Simulation::~Simulation()
 	DeleteVisualizationMesh();
 }
 
-void Simulation::Reset()
+void Simulation::Reset() 
 {	
+	std::cout << "Simulation::Reset" << std::endl;
+
 	m_y.resize(m_mesh->m_system_dimension);
 	m_external_force.resize(m_mesh->m_system_dimension);
 
@@ -232,6 +236,7 @@ void Simulation::Update()
 		// damping
 		dampVelocity();
 	}
+
 
 	//// volume
 	//m_current_volume = getVolume(m_mesh->m_current_positions);
@@ -1164,6 +1169,7 @@ void Simulation::SetMaterialProperty(std::vector<Constraint*>& constraints)
 		case CONSTRAINT_TYPE_ATTACHMENT:
 			(*it)->SetMaterialProperty(m_stiffness_attachment);
 			break;
+		//case CONSTRAINT_TYPE_STRAIN:
 		}
 	}
 	SetReprefactorFlag();
@@ -1353,67 +1359,97 @@ void Simulation::setupConstraints()
 		// procedurally generate constraints including to attachment constraints
 		{
 			// generate stretch constraints. assign a stretch constraint for each edge.
-			EigenVector3 p1, p2;
-			for(std::vector<Edge>::iterator e = m_mesh->m_edge_list.begin(); e != m_mesh->m_edge_list.end(); ++e)
+//			EigenVector3 p1, p2;
+//			for(std::vector<Edge>::iterator e = m_mesh->m_edge_list.begin(); e != m_mesh->m_edge_list.end(); ++e)
+//			{
+//				p1 = m_mesh->m_current_positions.block_vector(e->m_v1);
+//				p2 = m_mesh->m_current_positions.block_vector(e->m_v2);
+//				SpringConstraint* c;
+//				//if (e - m_mesh->m_edge_list.begin() < 100)
+//				//{
+//				//	c = new SpringConstraint(&m_stiffness_high, e->m_v1, e->m_v2, (p1 - p2).norm());
+//				//}
+//				//else
+//				{
+//					ScalarType rest_length = (p1 - p2).norm();
+//				//	rest_length;// *= rest_length_adjust;
+//					c = new SpringConstraint(e->m_v1, e->m_v2, rest_length);
+//				}
+//				m_constraints.push_back(c);
+////				m_mesh->m_expanded_system_dimension+=6;
+//			//	m_mesh->m_expanded_system_dimension_1d+=2;
+//			}
+			//add the strain limitating dor triangle
+		if (m_optimization_method == OPTIMIZATION_METHOD_LOCALGLOBAL) {
+			int tri_index[3];
+			for (int i = 0; i < m_mesh->m_triangle_list.size(); i += 3)
 			{
-				p1 = m_mesh->m_current_positions.block_vector(e->m_v1);
-				p2 = m_mesh->m_current_positions.block_vector(e->m_v2);
-				SpringConstraint* c;
-				//if (e - m_mesh->m_edge_list.begin() < 100)
-				//{
-				//	c = new SpringConstraint(&m_stiffness_high, e->m_v1, e->m_v2, (p1 - p2).norm());
-				//}
-				//else
-				{
-					ScalarType rest_length = (p1 - p2).norm();
-					rest_length *= rest_length_adjust;
-					c = new SpringConstraint(e->m_v1, e->m_v2, rest_length);
-				}
-				m_constraints.push_back(c);
-				m_mesh->m_expanded_system_dimension+=6;
-				m_mesh->m_expanded_system_dimension_1d+=2;
+				tri_index[0] = m_mesh->m_triangle_list[i + 0];
+				tri_index[1] = m_mesh->m_triangle_list[i + 1];
+				tri_index[2] = m_mesh->m_triangle_list[i + 2];
+				TriangleConstraint * temp;
+				temp = new TriangleConstraint(tri_index[0], tri_index[1], tri_index[2], m_mesh->m_current_positions, 1.00, 1.00, 1.0);
+				m_constraints.push_back(temp);
+			}
+		}
+			if (m_optimization_method == OPTIMIZATION_TEST) {
+				temp_test= (m_mesh->m_restpose_positions);
+				int tri_index[3];
+						for (int i = 0; i < m_mesh->m_triangle_list.size(); i+=3)
+						{
+							tri_index[0] = m_mesh->m_triangle_list[i + 0];
+							tri_index[1] = m_mesh->m_triangle_list[i + 1];
+							tri_index[2] = m_mesh->m_triangle_list[i + 2];
+							TestConstraint * temp;
+							temp = new TestConstraint(tri_index[0], tri_index[1], tri_index[2], m_mesh->m_current_positions, 1.00, 1.00, 1.0);
+							m_constraints.push_back(temp);
+						}
+				std::cout << "set constraint for  triangles list " << m_mesh->m_triangle_list.size() << std::endl;
+				std::cout << "set constraint size " << m_constraints.size() << std::endl;
+
+
 			}
 
-			// generate bending constraints. naive
-			unsigned int i, k;
-			for(i = 0; i < m_mesh->m_dim[0]; ++i)
-			{
-				for(k = 0; k < m_mesh->m_dim[1]; ++k)
-				{
-					unsigned int index_self = m_mesh->m_dim[1] * i + k;
-					p1 = m_mesh->m_current_positions.block_vector(index_self);
-					if (i+2 < m_mesh->m_dim[0])
-					{
-						unsigned int index_row_1 = m_mesh->m_dim[1] * (i + 2) + k;
-						p2 = m_mesh->m_current_positions.block_vector(index_row_1);
-						ScalarType rest_length = (p1 - p2).norm();
-						rest_length *= rest_length_adjust;
-						SpringConstraint* c = new SpringConstraint(CONSTRAINT_TYPE_SPRING_BENDING, index_self, index_row_1, rest_length);
-						m_constraints.push_back(c);
-						m_mesh->m_expanded_system_dimension+=6;
-						m_mesh->m_expanded_system_dimension_1d+=2;
-					}
-					if (k+2 < m_mesh->m_dim[1])
-					{
-						unsigned int index_column_1 = m_mesh->m_dim[1] * i + k + 2;
-						p2 = m_mesh->m_current_positions.block_vector(index_column_1);
-						ScalarType rest_length = (p1 - p2).norm();
-						rest_length *= rest_length_adjust;
-						SpringConstraint* c = new SpringConstraint(CONSTRAINT_TYPE_SPRING_BENDING, index_self, index_column_1, rest_length);
-						m_constraints.push_back(c);
-						m_mesh->m_expanded_system_dimension+=6;
-						m_mesh->m_expanded_system_dimension_1d+=2;
-					}
-				}
-			}
+			//// generate bending constraints. naive
+			//unsigned int i, k;
+			//for(i = 0; i < m_mesh->m_dim[0]; ++i)//ヨコマデ
+			//{
+			//	for(k = 0; k < m_mesh->m_dim[1]; ++k)//タテマデ
+			//	{
+			//		unsigned int index_self = m_mesh->m_dim[1] * i + k;
+			//		p1 = m_mesh->m_current_positions.block_vector(index_self);
+			//		if (i+2 < m_mesh->m_dim[0])
+			//		{
+			//			unsigned int index_row_1 = m_mesh->m_dim[1] * (i + 2) + k;
+			//			p2 = m_mesh->m_current_positions.block_vector(index_row_1);
+			//			ScalarType rest_length = (p1 - p2).norm();
+			//			rest_length *= rest_length_adjust;
+			//			SpringConstraint* c = new SpringConstraint(CONSTRAINT_TYPE_SPRING_BENDING, index_self, index_row_1, rest_length);
+			//			m_constraints.push_back(c);
+			//			m_mesh->m_expanded_system_dimension+=6;
+			//			m_mesh->m_expanded_system_dimension_1d+=2;
+			//		}
+			//		if (k+2 < m_mesh->m_dim[1])
+			//		{
+			//			unsigned int index_column_1 = m_mesh->m_dim[1] * i + k + 2;
+			//			p2 = m_mesh->m_current_positions.block_vector(index_column_1);
+			//			ScalarType rest_length = (p1 - p2).norm();
+			//			rest_length *= rest_length_adjust;
+			//			SpringConstraint* c = new SpringConstraint(CONSTRAINT_TYPE_SPRING_BENDING, index_self, index_column_1, rest_length);
+			//			m_constraints.push_back(c);
+			//			m_mesh->m_expanded_system_dimension+=6;
+			//			m_mesh->m_expanded_system_dimension_1d+=2;
+			//		}
+			//	}
+			//}
 
 			// generating attachment constraints.
-			//std::vector<unsigned int> handle_1_indices; handle_1_indices.clear(); handle_1_indices.push_back(0);
-			//std::vector<unsigned int> handle_2_indices; handle_2_indices.clear(); handle_2_indices.push_back(m_mesh->m_dim[1] * (m_mesh->m_dim[0] - 1));
+		//	std::vector<unsigned int> handle_1_indices; handle_1_indices.clear(); handle_1_indices.push_back(0);
+		//	std::vector<unsigned int> handle_2_indices; handle_2_indices.clear(); handle_2_indices.push_back(m_mesh->m_dim[1] * (m_mesh->m_dim[0] - 1));
 		//	NewHandle({ 0 }, glm::vec3(1.0, 0.0, 0.0));
 		//	NewHandle({ m_mesh->m_dim[1] * (m_mesh->m_dim[0] - 1) }, glm::vec3(1.0, 0.0, 0.0));
-			//AddAttachmentConstraint(0);
-			//AddAttachmentConstraint(m_mesh->m_dim[1]*(m_mesh->m_dim[0]-1));
+		//	AddAttachmentConstraint(0);
+		//	AddAttachmentConstraint(m_mesh->m_dim[1]*(m_mesh->m_dim[0]-1));
 		}
 		break;
 	case MESH_TYPE_TET:
@@ -1572,7 +1608,7 @@ void Simulation::calculateExternalForce()
 	// gravity
 	for (unsigned int i = 0; i < m_mesh->m_vertices_number; ++i)
 	{
-		m_external_force[3*i+2] += m_gravity_constant;//1ほうこう
+		m_external_force[3 * i + 1] += m_gravity_constant;//1ほうこう
 	}
 
 #ifdef ENABLE_MATLAB_DEBUGGING
@@ -1653,11 +1689,15 @@ void Simulation::collisionResolution(const VectorX& penetration, VectorX& x, Vec
 		}
 	}
 }
-
+int filenum = 0;
+int total_num = 0;
+int count = 0;
 void Simulation::integrateImplicitMethod()
 {
 	// take a initial guess
 	VectorX x = m_y;
+ 
+
 	//VectorX x = m_mesh->m_current_positions;
 
 	// init method specific constants
@@ -1666,6 +1706,7 @@ void Simulation::integrateImplicitMethod()
 	{
 		m_lbfgs_need_update_H0 = true;
 	}
+
 	EigenMatrixx3 x_nx3(x.size()/3, 3);
 
 	ScalarType total_time = 1e-5;
@@ -1687,13 +1728,15 @@ void Simulation::integrateImplicitMethod()
 	// while loop until converge or exceeds maximum iterations
 	bool converge = false;
 	m_ls_is_first_iteration = true;
+	filenum = 0;
 	for (m_current_iteration = 0; !converge && m_current_iteration < m_iterations_per_frame; ++m_current_iteration)
 	{
-		if (m_processing_collision)
-		{
-			// Collision Detection every iteration
-			collisionDetection(x);
-		}
+		//if (m_processing_collision)
+		//{
+		//	// Collision Detection every iteration
+		//	collisionDetection(x);
+		////	std::cout << "coll" << std::endl;
+		//}
 
 		g_integration_timer.Tic();
 		switch (m_optimization_method)
@@ -1704,11 +1747,26 @@ void Simulation::integrateImplicitMethod()
 		case OPTIMIZATION_METHOD_NEWTON:
 			converge = performNewtonsMethodOneIteration(x);
 			break;
-		case OPTIMIZATION_METHOD_LBFGS:
+		case OPTIMIZATION_METHOD_LBFGS: 
 			converge = performLBFGSOneIteration(x);
+			break;
+		//---suggest add function for projective dynamics
+		case OPTIMIZATION_METHOD_LOCALGLOBAL:
+			converge = performLocalGlobalOneIteration(x);//
+			break;
+		case OPTIMIZATION_TEST:
+			converge = performTest(x);
 			break;
 		default:
 			break;
+		}
+		
+
+
+		if (m_optimization_method == OPTIMIZATION_METHOD_LOCALGLOBAL|| OPTIMIZATION_TEST)
+		{
+			//Simplecollision(x);Simplecollision_out(VectorX& v)
+			collisionDetection(x);
 		}
 		m_ls_is_first_iteration = false;
 		g_integration_timer.Toc();
@@ -1741,6 +1799,12 @@ void Simulation::integrateImplicitMethod()
 
 	// update constants
 	updatePosAndVel(x);
+	if (m_optimization_method == OPTIMIZATION_METHOD_LOCALGLOBAL || OPTIMIZATION_TEST)
+	{
+		Simplecollision_out(m_mesh->m_current_positions,m_mesh->m_current_velocities);//m_mesh->m_current_velocities = (new_pos - m_mesh->m_current_positions) / m_h;
+		//updatePosAndVel(x);
+	}
+
 }
 
 bool Simulation::performGradientDescentOneIteration(VectorX& x)
@@ -1748,11 +1812,11 @@ bool Simulation::performGradientDescentOneIteration(VectorX& x)
 	// evaluate gradient direction
 	VectorX gradient;
 	evaluateGradient(x, gradient);
-
-#ifdef ENABLE_MATLAB_DEBUGGING
-	g_debugger->SendVector(gradient, "g");
-#endif
-
+//
+//#ifdef ENABLE_MATLAB_DEBUGGING
+//	g_debugger->SendVector(gradient, "g");
+//#endif
+//
 	if (gradient.norm() < EPSILON)
 		return true;
 
@@ -1836,13 +1900,13 @@ bool Simulation::performNewtonsMethodOneIteration(VectorX& x)
 }
 
 bool Simulation::performLBFGSOneIteration(VectorX& x)
-{
+{  
 	bool converged = false;
 	ScalarType current_energy;
 	VectorX gf_k;
 
 	// set xk and gfk
-	if (m_ls_is_first_iteration || !m_enable_line_search)
+	if (m_ls_is_first_iteration || !m_enable_line_search)       
 	{
 		current_energy = evaluateEnergyAndGradient(x, gf_k);
 	}
@@ -1861,7 +1925,7 @@ bool Simulation::performLBFGSOneIteration(VectorX& x)
 		m_lbfgs_y_queue.clear();
 		m_lbfgs_s_queue.clear();
 #else
-		// my implementation
+		// my implementation 
 		delete m_lbfgs_queue;
 		m_lbfgs_queue = new QueueLBFGS(x.size(), m_lbfgs_m);
 #endif
@@ -1880,6 +1944,7 @@ bool Simulation::performLBFGSOneIteration(VectorX& x)
 		}
 
 		g_lbfgs_timer.Resume();
+
 		// store them before wipeout
 		m_lbfgs_last_x = x;
 		m_lbfgs_last_gradient = gf_k;
@@ -1967,7 +2032,7 @@ bool Simulation::performLBFGSOneIteration(VectorX& x)
 			ScalarType rho_i = 1.0 / yi_dot_si;
 			rho.push_back(rho_i);
 			alpha.push_back(rho[i]*m_lbfgs_s_queue[i].dot(q));
-			q = q - alpha[i] * m_lbfgs_y_queue[i];
+			q = q - alpha[i] * m_lbfgs_y_queu    e[i];
 #else
 			// my implementation
 			m_lbfgs_queue->visitSandY(&s_i, &y_i, i);
@@ -2039,7 +2104,255 @@ bool Simulation::performLBFGSOneIteration(VectorX& x)
 
 	return converged;
 }
+#include <fstream>
 
+//-------------------------------------------------------suggest PD--------------------------------------------------------------------
+bool Simulation::performTest(VectorX& x)
+{
+	if (m_prefactorization_flag == false)
+	{
+		filenum = 0;
+	}
+	ScalarType current_energy;
+	prefactorize();// here, we  set the laplacian and set jacobian mat
+	m_prefactorization_flag = true;
+	//-----Load local Mesh-----------------------------//	
+	std::stringstream  filename;
+	filename << "PD.obj";
+	std::string result = filename.str();
+	//-----Variable for Local Mesh-------------//
+	VectorX temp_vec_added;
+	VectorX temp_initial_vec;  // rest pose for the remesed mesh
+	VectorX temp_uv_added;	   // uv for the remesed rest mesh 
+	
+	std::vector<int > local_triangle_list; // local mesh triangle list
+	local_triangle_list.clear();
+
+	std::vector<int> index_from_uv;//set index for each uv 
+
+	double inv_1 = 1.0 / (m_mesh->m_dim[0] - 1);//x_dim range
+	double inv_2 = 1.0 / (m_mesh->m_dim[1] - 1);//y_dim range
+
+	//load the local mesh
+ 	LoadLocalMesh(result.c_str(), temp_vec_added, temp_uv_added,local_triangle_list);
+	
+	m_mesh->m_interpolated_triangle_list.clear();
+	for (int i = 0; i < local_triangle_list.size(); i++)
+	{
+		m_mesh->m_interpolated_triangle_list.push_back(local_triangle_list[i]);
+	}
+	
+	// calculate uv index from the local mesh uv positions
+	index_from_uv.clear();
+	for (int i = 0; i <temp_uv_added.size()/3;i++)
+	{
+		int i_dim,k_dim;
+		i_dim = temp_uv_added[i * 3 + 0] / inv_1;
+		k_dim = temp_uv_added[i * 3 + 1] / inv_2;
+		index_from_uv.push_back(i_dim);
+		index_from_uv.push_back(k_dim);
+	}
+	//std the inter polation test for the 
+
+	//set temp_vec_added from current position using the uv_position 
+
+	temp_initial_vec.resize(temp_vec_added.size());
+
+	for (int temp = 0; temp < temp_vec_added.size()/3; temp++)
+	{
+		//interpolate the position from X using index
+		int i, k,l;
+
+		i = temp_uv_added[temp * 3 + 0] / inv_1;
+		k = temp_uv_added[temp * 3 + 1] / inv_2;
+		
+		double double_uv[2];
+		double_uv[0] =double(double(temp_uv_added[temp * 3 + 0]) / double(inv_1));
+		double_uv[1] =double(double(temp_uv_added[temp * 3 + 1]) / double(inv_2));
+		double  interval_x[2];
+		double  interval_y[2];
+
+	
+		interval_x[0] = double(double_uv[0] - double(i));
+		interval_y[0] = double(double_uv[1] - double(k));
+		interval_x[1] = double(-double_uv[0] +double(i + 1));
+		interval_y[1] = double(-double_uv[1] + double(k+1));
+	 
+
+	
+		int index_x0 = m_mesh->m_dim[1] * i + k;
+		int index_x1 = m_mesh->m_dim[1] * (i+1) + (k);
+		int index_y0 = m_mesh->m_dim[1] * i + k;
+		int index_y1 = m_mesh->m_dim[1] * (i ) + (k+1);
+
+		
+	  
+		//for idex ik  position set 
+		temp_vec_added[temp * 3 + 0] = m_mesh->m_current_positions[index_x0 * 3 + 0]+(m_mesh->m_current_positions[index_x1 * 3 + 0] - m_mesh->m_current_positions[index_x0 * 3 + 0])*interval_x[0];
+		temp_vec_added[temp * 3 + 1] = m_mesh->m_current_positions[index_y0 * 3 + 1]+ (m_mesh->m_current_positions[index_y1 * 3 + 1] - m_mesh->m_current_positions[index_y0 * 3 + 1])*interval_y[0];
+		temp_vec_added[temp * 3 + 2] = m_mesh->m_current_positions[index_x0 * 3 + 2]+ (m_mesh->m_current_positions[index_x1 * 3 + 2] - m_mesh->m_current_positions[index_x0 * 3 + 2])*interval_x[0];
+
+		temp_initial_vec[temp * 3 + 0] = m_mesh->m_restpose_positions[index_x0 * 3 + 0] + (m_mesh->m_restpose_positions[index_x1 * 3 + 0] - m_mesh->m_restpose_positions[index_x0 * 3 + 0])*interval_x[0];
+		temp_initial_vec[temp * 3 + 1] = m_mesh->m_restpose_positions[index_y0 * 3 + 1]+ (m_mesh->m_restpose_positions[index_y1 * 3 + 1] - m_mesh->m_restpose_positions[index_y0 * 3 + 1])*interval_y[0];
+		temp_initial_vec[temp * 3 + 2] = m_mesh->m_restpose_positions[index_x0 * 3 + 2]+ (m_mesh->m_restpose_positions[index_x1 * 3 + 2] - m_mesh->m_restpose_positions[index_x0 * 3 + 2])*interval_x[0];
+
+	}
+
+	//calculate DF 
+	m_constraints.clear();
+	for (int i = 0; i < m_mesh->m_interpolated_triangle_list.size()/3; i++)
+	{
+		
+		TestConstraint * temp;
+		temp = new TestConstraint(m_mesh->m_interpolated_triangle_list[i*3+0], m_mesh->m_interpolated_triangle_list[i * 3 + 1], m_mesh->m_interpolated_triangle_list[i * 3 + 2] , temp_initial_vec, 1.00, 1.00, 1.0,1);
+		m_constraints.push_back(temp);
+	}
+	//project the F
+	EigenMatrix2X  projection;//set the projection latrix in local space
+	projection.resize(2, m_constraints.size() * 2);
+	for (int i = 0; i < m_constraints.size(); i++) {
+		m_constraints[i]->projection_uvs(temp_vec_added, projection, i);
+	}
+
+
+	//どの三角形に補完するか判定
+	std::vector<std::vector<int>> included_triangle_index;
+	included_triangle_index.resize(m_mesh->m_triangle_list.size());
+	for (int i = 0; i < m_mesh->m_interpolated_triangle_list.size() / 3; i++)
+	{
+		for (int j = 0; j < 3; j++) {
+			int i0 = m_mesh->m_interpolated_triangle_list[i * 3+j];
+			int uv_i, uv_k;
+			uv_i = index_from_uv[i0 * 2 + 0];
+			uv_k = index_from_uv[i0 * 2 + 1];
+			int index = m_mesh->m_dim[1] * uv_i + uv_k;
+			double temp_x = double(temp_uv_added[i0 * 3 + 0] - inv_1*double(uv_i));
+			double temp_y = double(temp_uv_added[i0 * 3 + 1] - inv_2*double(uv_k));
+
+
+			if ((uv_i + uv_k) % 2 == 0)
+			{
+				if ((temp_x>temp_y ) > 0)
+				{
+					included_triangle_index[index * 2].push_back( i);
+				}
+				else
+				{
+					included_triangle_index[index * 2+1].push_back(i);
+				}
+
+			}
+			else
+			{
+				if ((temp_y + temp_x -1) > 0)
+				{
+					included_triangle_index[index * 2].push_back(i);
+				}
+				else
+				{
+					included_triangle_index[index * 2 + 1].push_back(i);
+				}
+			}
+		}
+	}
+	////-----------------set normal interpolate 
+
+
+
+
+	//-----set draw
+	//here for draw
+	m_mesh->m_current_interpolated_positions.resize(temp_vec_added.size());
+	for(int i = 0; i < temp_vec_added.size(); i++)
+	{
+		m_mesh->m_current_interpolated_positions[i] = temp_vec_added[i];
+	}
+	EigenMatrix3X  project;
+	project.resize(3, m_constraints.size() * 2);
+	//projection set after
+	for (int i = 0; i < m_constraints.size(); i++) {
+		m_constraints[i]->projection_interpolate_normal(temp_vec_added, projection, project, i,included_triangle_index[i]);
+	}
+
+	EigenMatrix3X temp_mat_3X = project *Init_Jacobian;
+	EigenMatrixX3 temp_mat = temp_mat_3X.transpose();
+	VectorX temp_vec;
+	temp_vec.resize(temp_mat.rows() * 3);
+	Matrixmx3ToVector3mx1(temp_mat, temp_vec);
+	VectorX b = m_y *m_mesh->m_mass_matrix + m_h*m_h*(temp_vec);
+	//(num *3 ,1) = (num *3 ,1)* mass + jaco () project(3 , m_constrainZZZZZZZts.size() * 2)
+	LocalGlobalKernelLinearSolve(x, b);
+	//
+
+	m_mesh->Set_interpolated_position();
+	m_mesh->m_interpolated_vertices_number = temp_vec_added.size();
+	
+
+	bool converged = false;
+	return converged;
+}
+
+
+bool Simulation::performLocalGlobalOneIteration(VectorX& x)
+{
+	bool converged = false;
+	ScalarType current_energy;
+	prefactorize();//here, we  set the laplacian and set jacobian mat
+
+				   //----------------------------for triangle strain
+	EigenMatrix3X  project;
+	project.resize(3, m_constraints.size() * 2);
+
+
+	for (int i = 0; i < m_constraints.size(); i++) {
+		m_constraints[i]->projection(x, project, i);
+	}
+	//for temp
+	EigenMatrix3X temp_mat_3X = project *Jacobian;// 3,m_constraints.size() * 2;(m_constraints.size() * 2,num) //
+	EigenMatrixX3 temp_mat = temp_mat_3X.transpose();
+	VectorX temp;
+	temp.resize(m_mesh->m_system_dimension);
+	Matrixmx3ToVector3mx1(temp_mat, temp);
+ 	VectorX b = m_y *m_mesh->m_mass_matrix;
+	b += m_h*m_h*(temp); //(num *3 ,1) = (num *3 ,1)* mass + jaco () project(3 , m_constraints.size() * 2)
+															 //	std::cout << "h" << m_h*m_sth<< std::endl;
+	LocalGlobalKernelLinearSolve(x, b);
+	return converged;
+}
+
+
+//--------------------------------this is only for Local Global method---------------------------------------------//
+void Simulation::ComputeDVector(const VectorX& x, VectorX& d) //this is for local solve as a constraints
+{
+	d.resize(m_constraints.size() * 3);
+	d.setZero();
+	for (unsigned int index = 0; index < m_constraints.size(); ++index)
+	{
+		m_constraints[index]->EvaluateDVector(index, x, d);
+	}	
+}
+
+void Simulation::CalcStrain()
+{
+
+
+}
+
+
+void Simulation::LocalGlobalKernelLinearSolve(VectorX & r, VectorX  &rhs)
+{
+//	this is for calc in Local global linear calc
+	EigenMatrixx3 rhs_n3(rhs.size() / 3, 3);
+	Vector3mx1ToMatrixmx3(rhs, rhs_n3);
+	// solve using the nxn laplacian
+	EigenMatrixx3 r_n3;
+	r_n3 = m_prefactored_solver_1D.solve(rhs_n3);
+	// convert the r esult back
+	Matrixmx3ToVector3mx1(r_n3, r);
+}
+
+
+//----------------------------------------------------------------------end suggested--------------------------------------------------------------------------
 void Simulation::LBFGSKernelLinearSolve(VectorX & r, VectorX rhs, ScalarType scaled_identity_constant) // Ar = rhs
 {
 	r.resize(rhs.size());
@@ -2067,8 +2380,6 @@ void Simulation::LBFGSKernelLinearSolve(VectorX & r, VectorX rhs, ScalarType sca
 		}
 		// convert the result back
 		Matrixmx3ToVector3mx1(r_n3, r);
-
-
 		////// conventional solve using 3nx3n system
 		//if (m_solver_type == SOLVER_TYPE_CG)
 		//{
@@ -2518,7 +2829,8 @@ ScalarType Simulation::evaluateEnergyPureConstraint(const VectorX& x, const Vect
 	//	}
 	//}
 
-	// hardcoded collision plane
+
+	// hardcoded collision plane//collisionhere
 	if (m_processing_collision)
 	{
 		energy += evaluateEnergyCollision(x);
@@ -2660,7 +2972,7 @@ void Simulation::evaluateHessianPureConstraintSmart(const VectorX& x, SparseMatr
 	}
 }
 
-void Simulation::evaluateLaplacianPureConstraint(SparseMatrix& laplacian_matrix)
+void Simulation::evaluateLaplacianPureConstraint(SparseMatrix& laplacian_matrix)//ここでlap make
 {
 	laplacian_matrix.resize(m_mesh->m_system_dimension, m_mesh->m_system_dimension);
 	std::vector<SparseMatrixTriplet> l_triplets;
@@ -3016,33 +3328,63 @@ void Simulation::precomputeLaplacian()
 
 void Simulation::prefactorize()
 {
-	if (m_prefactorization_flag == false)
+	if (m_prefactorization_flag == false)//add for PD
 	{
-		// update laplacian coefficients
-		if (m_stiffness_auto_laplacian_stiffness)
+
+		//change for 
+		// update laplacian coefficients		
+		switch (m_optimization_method)
 		{
-			precomputeLaplacianWeights();
-		}
-		else
-		{
+		case OPTIMIZATION_TEST:
+			// reduced dim space laplacian nxn
+
+			TestComputeJacobianMatrix(Init_Jacobian, m_mesh->m_system_dimension / 3);
+			setWeightedLaplacianMatrix1D();
+			factorizeDirectSolverLLT(m_weighted_laplacian_1D, m_prefactored_solver_1D, "Our Method Reduced Space");
+			m_preloaded_cg_solver_1D.compute(m_weighted_laplacian_1D);
+			break;
+		case OPTIMIZATION_METHOD_LOCALGLOBAL:
+			//set jap amd jacobiab
+		
+			SetJacobianMatrix();
+
 			SetMaterialProperty();
-		}
+			// reduced dim space laplacian nxn
+			setWeightedLaplacianMatrix1D();
+			factorizeDirectSolverLLT(m_weighted_laplacian_1D, m_prefactored_solver_1D, "Our Method Reduced Space");
+			m_preloaded_cg_solver_1D.compute(m_weighted_laplacian_1D);
+			std::cout << "local global precomputetion" << std::endl;
+			break;
 
-		// full space laplacian 3n x 3n
-		setWeightedLaplacianMatrix();
-		factorizeDirectSolverLLT(m_weighted_laplacian, m_prefactored_solver, "Our Method");		// prefactorization of laplacian
-		m_preloaded_cg_solver.compute(m_weighted_laplacian);		// load the cg solver
+		case OPTIMIZATION_METHOD_LBFGS:
+			if (m_stiffness_auto_laplacian_stiffness)
+			{
+				precomputeLaplacianWeights();
+			}
+			else
+			{
+				SetMaterialProperty();
+			}
 
-		// reduced dim space laplacian nxn
-		setWeightedLaplacianMatrix1D();
-		factorizeDirectSolverLLT(m_weighted_laplacian_1D, m_prefactored_solver_1D, "Our Method Reduced Space");
-		m_preloaded_cg_solver_1D.compute(m_weighted_laplacian_1D);
+			// full space laplacian 3n x 3n
+			setWeightedLaplacianMatrix();
+			factorizeDirectSolverLLT(m_weighted_laplacian, m_prefactored_solver, "Our Method");		// prefactorization of laplacian
+			m_preloaded_cg_solver.compute(m_weighted_laplacian);		// load the cg solver
+
+			// reduced dim space laplacian nxn
+			setWeightedLaplacianMatrix1D();
+			factorizeDirectSolverLLT(m_weighted_laplacian_1D, m_prefactored_solver_1D, "Our Method Reduced Space");
+			m_preloaded_cg_solver_1D.compute(m_weighted_laplacian_1D);
 
 #ifdef ENABLE_MATLAB_DEBUGGING
-		g_debugger->SendSparseMatrix(m_weighted_laplacian, "L");
-		g_debugger->SendSparseMatrix(m_weighted_laplacian_1D, "L1");
+			g_debugger->SendSparseMatrix(m_weighted_laplacian, "L");
+			g_debugger->SendSparseMatrix(m_weighted_laplacian_1D, "L1");
 #endif
+			break;
+		}
+
 		m_prefactorization_flag = true;
+
 	}
 }
 #pragma endregion
@@ -3210,5 +3552,139 @@ void Simulation::generateRandomVector(const unsigned int size, VectorX& x)
 	//	dim = (dim + 1) % 3;
 	//}
 }
+
+//----------------------------------------------------suggested--------------------------------------------//
+void Simulation::SetJacobianMatrix()
+{
+	ComputeJacobianMatrix(Jacobian);
+}
+
+void Simulation::ComputeJacobianMatrix(SparseMatrix& J)
+{
+	J.resize( m_constraints.size() * 2, m_mesh->m_system_dimension / 3);
+	std::vector<SparseMatrixTriplet> J_triplets;
+	J_triplets.clear();
+
+	for (unsigned int index = 0; index < m_constraints.size(); index++)
+	{
+		m_constraints[index]->EvaluateJMatrix(index, J_triplets);
+	}
+
+	std::cout << " Constraints size in calculate jacobian : " << m_constraints.size()<<std::endl;
+	std::cout << " jacobian DIM : rows" << J.rows()<<":cols"<<J.cols()<< ":" << std::endl;
+	std::cout << " Position Size : " << m_mesh->m_vertices_number<< std::endl;
+	J.setFromTriplets(J_triplets.begin(), J_triplets.end());
+}
+
+void Simulation::TestComputeJacobianMatrix(SparseMatrix& J,int number)
+{
+	J.resize(m_constraints.size() * 2, number);
+	std::vector<SparseMatrixTriplet> J_triplets;
+	J_triplets.clear();
+
+	for (unsigned int index = 0; index < m_constraints.size(); index++)
+	{
+		m_constraints[index]->EvaluateJMatrix(index, J_triplets);
+	}
+
+	std::cout << "calc jacobian constraints size" << m_constraints.size() << std::endl;
+	std::cout << " jacobian DIM" << J.rows() << ":" << J.cols() << std::endl;
+	std::cout << " position" << m_mesh->m_vertices_number << std::endl;
+	J.setFromTriplets(J_triplets.begin(), J_triplets.end());
+}
+
+
+//add simple collision
+void Simulation::Simplecollision(VectorX& x)
+{
+	for (std::vector<CollisionSpringConstraint>::iterator it = m_collision_constraints.begin(); it != m_collision_constraints.end(); ++it)
+	{ 
+		it->Collisionprojection(x);
+	}
+
+}
+void Simulation::Simplecollision_out(VectorX& x, VectorX& v)//m_mesh->m_current_velocities 
+{
+	for (std::vector<CollisionSpringConstraint>::iterator it = m_collision_constraints.begin(); it != m_collision_constraints.end(); ++it)
+	{
+		it->Collisionout(x, v);
+	}
+}
+
+
+void Simulation::LoadLocalMesh(const char* filename, VectorX &vertices, VectorX &uvpositions,std::vector<int> &triangle_list)
+{
+		
+
+		std::ifstream infile(filename,std::ifstream::in);
+		if (!infile.is_open())
+		{
+			std::cout << "cannot read " << filename << std::endl;
+			return;
+		}
+		else
+		{
+			std::cout << "read " << filename << std::endl;
+
+		}
+	   
+		std::vector<double> temp_vert;
+		std::vector<double> uv_vert;
+
+		std::vector<int> elements;
+		std::string line;
+		while(std::getline(infile, line))
+		{
+			if (line.substr(0, 2) == "v ")
+			{
+				std::istringstream s(line.substr(2));
+				glm::vec3 v; s >> v.x; s >> v.y; s >> v.z;// v.w = 1.0f;
+				temp_vert.push_back(v.x);
+				temp_vert.push_back(v.y);
+				temp_vert.push_back(v.z);
+			}else if (line.substr(0, 2) == "f ") {
+				std::istringstream s(line.substr(2));
+
+				int a, b, c;
+				s >> a; s >> b; s >> c;
+				a--; b--; c--;
+				elements.push_back(a); elements.push_back(b); elements.push_back(c);
+			}
+			else if (line.substr(0, 2) == "u ")
+			{
+				std::istringstream s(line.substr(2));
+				glm::vec3 uv; s >> uv.x; s >> uv.y; s >> uv.z;// v.w = 1.0f;
+
+				uv_vert.push_back(uv.x);
+				uv_vert.push_back(uv.y);
+				uv_vert.push_back(uv.z);
+
+			}
+			else if (line[0] == '#') { /* ignoring this line */ }
+			else { /* ignoring this line */ }
+		}
+		int num_vertices = temp_vert.size();
+		vertices.resize(num_vertices);
+		uvpositions.resize(num_vertices);
+
+			for (int i = 0; i < num_vertices/3; i++)
+				{
+					vertices[i * 3 + 0] = temp_vert[i * 3 + 0];
+					vertices[i * 3 + 1] = temp_vert[i * 3 + 1];
+					vertices[i * 3 + 2] = temp_vert[i * 3 + 2];
+					uvpositions[i * 3 + 0]= uv_vert[i * 3 + 0];
+					uvpositions[i * 3 + 1] = uv_vert[i * 3 + 1];
+					uvpositions[i * 3 + 2] = uv_vert[i * 3 + 2];
+			}
+
+	    int num_face  =elements.size();
+		int face[3];
+				for (int i = 0; i < num_face; i++)
+				{
+					triangle_list.push_back(elements[i]);
+				}
+}
+		
+
 
 #pragma endregion

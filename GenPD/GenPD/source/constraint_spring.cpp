@@ -38,7 +38,7 @@ extern MatlabDebugger *g_debugger;
 
 //----------SpringConstraint Class----------//
 SpringConstraint::SpringConstraint(ConstraintType type, unsigned int p1, unsigned int p2, ScalarType length) :
-Constraint(type),
+Constraint(type), 
 m_p1(p1),
 m_p2(p2),
 m_rest_length(length)
@@ -212,7 +212,7 @@ void SpringConstraint::EvaluateWeightedLaplacian(std::vector<SparseMatrixTriplet
 	laplacian_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 1, 3 * m_p1 + 1, ks));
 	laplacian_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 2, 3 * m_p1 + 2, ks));
 	// block 1 2
-	laplacian_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 0, 3 * m_p2 + 0, -ks));
+	laplacian_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 0, 3 * m_p2 + 0, -ks));//ヒタイカクセイブン
 	laplacian_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 1, 3 * m_p2 + 1, -ks));
 	laplacian_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 2, 3 * m_p2 + 2, -ks));
 	// block 2 1
@@ -250,3 +250,48 @@ void SpringConstraint::EvaluateWeightedLaplacian1D(std::vector<SparseMatrixTripl
 	// block 2 2
 	laplacian_1d_triplets.push_back(SparseMatrixTriplet(m_p2 + 0, m_p2 + 0, ks));
 }
+
+//------------------------------------------------------------sugge----------------------------------------------------
+void SpringConstraint::EvaluateJMatrix(unsigned int index, std::vector<SparseMatrixTriplet>& J_triplets)
+{
+	ScalarType ks = (m_stiffness);
+
+	// block 1 1
+	J_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 0, 3 * index + 0, ks));
+	J_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 1, 3 * index + 1, ks));
+	J_triplets.push_back(SparseMatrixTriplet(3 * m_p1 + 2, 3 * index + 2, ks));
+	// block 2 2								 
+	J_triplets.push_back(SparseMatrixTriplet(3 * m_p2 + 0, 3 * index + 0, -ks));
+	J_triplets.push_back(SparseMatrixTriplet(3 * m_p2 + 1, 3 * index + 1, -ks));
+	J_triplets.push_back(SparseMatrixTriplet(3 * m_p2 + 2, 3 * index + 2, -ks));
+}
+
+void SpringConstraint::EvaluateDVector(unsigned int index, const VectorX& x, VectorX& d)
+{
+
+	//change in terms of constrain shape
+
+
+	//add length constraint
+	EigenVector3 x_ij = x.block_vector(m_p1) -x.block_vector(m_p2);
+//	if (x_ij.norm() != m_rest_length) std::cout << "aaa" <<index<< std::endl;
+	EigenVector3 di = x_ij.normalized() * m_rest_length;
+
+
+	//std::cout << "cal" << m_rest_length << std::endl;
+
+	d.block_vector(index) = di;
+
+
+
+}
+
+////add strain 
+//void SpringConstraint::TriangleStrainConstraint()//add strain constrain for b
+//{
+	//for one triangle
+
+//}
+
+
+//------------------------------------------------------------end------------------------------------------------------------

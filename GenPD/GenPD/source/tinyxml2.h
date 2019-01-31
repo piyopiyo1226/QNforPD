@@ -1396,7 +1396,7 @@ public:
     	This is a convenient method for setting the text of simple contained text:
     	@verbatim
     	<foo>This is text</foo>
-    		fooElement->SetText( "Hullaballoo!" );
+    		fooElement->SetText( "Hullaballoo!" );.@L,GW@E
      	<foo>Hullaballoo!</foo>
 		@endverbatim
 

@@ -30,7 +30,9 @@
 #pragma warning( disable : 4267)
 
 #include <fstream>
+#include "tinycolormap.hpp"
 #include "mesh.h"
+
 
 void Mesh::Reset()
 {
@@ -52,8 +54,9 @@ void Mesh::Cleanup()
 
 void Mesh::Update()
 {
-	Eigen2GLM(m_current_positions, m_positions);
+	Eigen2GLM(m_current_positions, m_positions);//
 }
+
 
 void Mesh::Draw(const VBO& vbos, int show_texture)
 {
@@ -119,6 +122,115 @@ void Mesh::Draw(const VBO& vbos, int show_texture)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	
 }
 
+void Mesh::Draw_Error(const VBO& vbos, int show_texture)
+{
+	computeNormal();
+	m_interpolated_colors.resize(m_positions.size());
+	std::vector<double> temp_max;
+	temp_max.clear();
+//	std::cout << "m_local_positions" << m_local_positions.size() << std::endl;
+	for (int i = 0; i < m_positions.size(); i++)
+		{
+		double value;// = m_positions[i][0] - m_local_positions[i][0];
+			m_interpolated_colors[i][0] = m_positions[i][0] - m_local_positions[i][0];
+			m_interpolated_colors[i][1] = m_positions[i][1] - m_local_positions[i][1];
+			m_interpolated_colors[i][2] = m_positions[i][2] - m_local_positions[i][2];
+			double temp_error = m_interpolated_colors[i][0]* m_interpolated_colors[i][0] + m_interpolated_colors[i][1] * m_interpolated_colors[i][1]+ m_interpolated_colors[i][2] * m_interpolated_colors[i][2];//
+			double temp_mother= m_local_positions[i][0] * m_local_positions[i][0] + m_local_positions[i][1] * m_local_positions[i][1] + m_local_positions[i][2] * m_local_positions[i][2];
+			if (sqrt(temp_error) < 0.000000000)
+			{
+				double value = 0.000000000;
+				temp_max.push_back(value);
+			}
+			else
+			{
+				temp_max.push_back(sqrt(temp_error));
+			}
+			//value = (temp_error);// / sqrt(temp_mother);
+			//std::cout << sqrt(temp_error) << std::endl;
+	}
+		//add the mode
+		double max_error= *std::max_element(temp_max.begin(), temp_max.end());
+		
+		//if (!g_si)
+		//{
+		for (int i = 0; i < m_dim[0]; ++i)
+		{
+			for (int k = 0; k < m_dim[1]; ++k)
+			{
+				int index = m_dim[1] * i + k;
+				double value = temp_max[index]; //m_interpolated_colors[i].t;
+				if (max_error <0.000000000)
+				{
+					value = 0.000000000;
+				}
+				//std::cout << value << std::endl;
+				tinycolormap::Color error_colors = tinycolormap::GetColor(value, tinycolormap::ColormapType::Plasma);
+				glm::vec3 mesh_color(error_colors.r(), error_colors.g(), error_colors.b());
+				m_colors[index] = mesh_color;//add the error heat map
+			}
+		}
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	unsigned int size = m_vertices_number;
+	unsigned int element_num = m_triangle_list.size();
+
+	// position
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * size * sizeof(float), &m_positions[0], GL_DYNAMIC_DRAW);
+
+	// color
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_cbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * size * sizeof(float), &m_colors[0], GL_STATIC_DRAW);
+	// normal
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_nbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * size * sizeof(float), &m_normals[0], GL_DYNAMIC_DRAW);
+	// texture
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_tbo);
+	glBufferData(GL_ARRAY_BUFFER, 2 * size * sizeof(float), &m_texcoords[0], GL_STATIC_DRAW);
+
+	// indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.m_ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, element_num * sizeof(unsigned int), &m_triangle_list[0], GL_STATIC_DRAW);
+	//add here t
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_cbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_nbo);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_tbo);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glm::mat4 identity = glm::mat4(); // identity matrix
+	glUniformMatrix4fv(vbos.m_uniform_transformation, 1, false, &identity[0][0]);
+
+	glUniform1i(vbos.m_uniform_enable_texture, show_texture); // enable/disable texture
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.m_ibo);
+	glDrawElements(GL_TRIANGLES, element_num, GL_UNSIGNED_INT, 0);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	glUniform1i(vbos.m_uniform_enable_texture, 0); // disable texture
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void Mesh::DrawWireFrame(const VBO& vbos, int line_width)
 {
 	computeNormal();
@@ -167,6 +279,7 @@ void Mesh::DrawWireFrame(const VBO& vbos, int line_width)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	
 }
+
 
 void Mesh::ExportToOBJ(const char* filename)
 {
@@ -314,16 +427,22 @@ void ClothMesh::generateParticleList()
 
 	ScalarType unit_mass = m_total_mass / m_vertices_number;
 
+	m_interpolated_positions.resize(m_vertices_number);
 	m_positions.resize(m_vertices_number);
 	m_normals.resize(m_vertices_number);
 	m_colors.resize(m_vertices_number);
 	m_texcoords.resize(m_vertices_number);
+
+	//add
+
+	m_local_positions.resize(m_vertices_number);
 
 	m_restpose_positions.resize(m_system_dimension);
 	m_current_positions.resize(m_system_dimension);
 	m_current_velocities.resize(m_system_dimension);
 	m_mass_matrix.resize(m_system_dimension, m_system_dimension);
 	m_inv_mass_matrix.resize(m_system_dimension, m_system_dimension);
+
 
 	m_mass_matrix_1d.resize(m_vertices_number, m_vertices_number);
 	m_inv_mass_matrix_1d.resize(m_vertices_number, m_vertices_number);
@@ -377,6 +496,7 @@ void ClothMesh::generateParticleList()
 	assert(m_dim[0] >=2 && m_dim[1] >= 2);
 	ScalarType inv_1 = 1.0 / (m_dim[0]-1);
 	ScalarType inv_2 = 1.0 / (m_dim[1]-1);
+	m_uv_positions.resize(m_system_dimension);
 	for(i = 0; i < m_dim[0]; ++i)
 	{
 		for(k = 0; k < m_dim[1]; ++k)
@@ -384,6 +504,10 @@ void ClothMesh::generateParticleList()
 			index = m_dim[1] * i + k;
 			m_colors[index] = mesh_color;
 			m_texcoords[index] = glm::vec2(inv_1*i, inv_2*k);
+			m_uv_positions[index * 3 + 0] = inv_1*i;
+			m_uv_positions[index * 3 + 1] = inv_2*k;
+			m_uv_positions[index * 3 + 2] = 0.0;
+
 		}
 	}
 }
@@ -737,3 +861,68 @@ void TetMesh::generateEdgeList()
 		}
 	}
 }
+
+//----------------------add
+
+
+void Mesh::DrawInterPolatedMesh(const VBO& vbos, int line_width)
+{
+	//computeNormal(); 
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(line_width);
+
+	//‚±‚±‚à‹A‚é
+	unsigned int size = m_interpolated_vertices_number/3;
+	
+	//‚±‚±‚©‚¦‚é
+	unsigned int element_num = m_interpolated_triangle_list.size();
+	// position
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * size * sizeof(float), &m_interpolated_positions[0], GL_DYNAMIC_DRAW);
+
+	// color
+	std::vector<glm::vec3> colors;
+	colors.resize(m_interpolated_positions.size());
+	std::fill(colors.begin(), colors.end(), glm::vec3(1, 0, 0));
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_cbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * size * sizeof(float), &colors[0], GL_STATIC_DRAW);
+
+	// indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.m_ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, element_num * sizeof(unsigned int), &m_interpolated_triangle_list[0], GL_DYNAMIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbos.m_cbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glm::mat4 identity = glm::mat4(); // identity matrix
+	glUniformMatrix4fv(vbos.m_uniform_transformation, 1, false, &identity[0][0]);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.m_ibo);
+	glDrawElements(GL_TRIANGLES, element_num, GL_UNSIGNED_INT, 0);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Mesh::Set_interpolated_position()
+{
+	m_interpolated_positions.resize(m_current_interpolated_positions.size() / 3);
+	Eigen2GLM(m_current_interpolated_positions, m_interpolated_positions);
+}
+
+
+
+//// add load local mesh
+//void Mesh::

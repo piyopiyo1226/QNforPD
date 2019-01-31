@@ -50,10 +50,18 @@ typedef Eigen::Matrix<ScalarType, 12, 1, 0, 12, 1> EigenVector12;
 typedef Eigen::Matrix<ScalarType, 4, 4, 0, 4, 4> EigenMatrix4;
 typedef Eigen::Matrix<ScalarType, 4, 1, 0, 4, 1> EigenVector4;
 typedef Eigen::Matrix<ScalarType, 3, 3, 0, 3, 3> EigenMatrix3;
+typedef Eigen::Matrix<ScalarType, 3, 2, 0, 3, 2> EigenMatrix32;
+
+typedef Eigen::Matrix<ScalarType, 2, 2, 0, 2, 2> EigenMatrix22;
+
 typedef Eigen::Matrix<ScalarType, 3, 1, 0, 3 ,1> EigenVector3;
 typedef Eigen::Matrix<ScalarType, 2, 2, 0, 2 ,2> EigenMatrix2;
 typedef Eigen::Matrix<ScalarType, 2, 1, 0, 2 ,1> EigenVector2;
 typedef Eigen::Matrix<ScalarType, -1, 3, 0, -1 ,3> EigenMatrixx3;
+typedef Eigen::Matrix<ScalarType, Eigen::Dynamic, 3> EigenMatrixX3;
+typedef Eigen::Matrix<ScalarType, 3, Eigen::Dynamic> EigenMatrix3X;
+typedef Eigen::Matrix<ScalarType, 2, Eigen::Dynamic> EigenMatrix2X;
+typedef Eigen::Matrix<ScalarType, Eigen::Dynamic, 2> EigenMatrixX2;
 typedef Eigen::Matrix<ScalarType, Eigen::Dynamic, 1> VectorX;
 typedef Eigen::Matrix<ScalarType, Eigen::Dynamic, Eigen::Dynamic> Matrix;
 typedef Eigen::SparseMatrix<ScalarType> SparseMatrix;
